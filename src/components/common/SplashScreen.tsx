@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
 const SESSION_KEY = "nouman_splash_seen";
-const MAX_DURATION_MS = 2200; // branding, not a loader — never block longer.
+// The brand clip is ~5s. Let it play to its natural end (onEnded); this is only
+// a stall-guard so a failed/hung video can never hold the page hostage.
+const SAFETY_TIMEOUT_MS = 7000;
 
 export function SplashScreen() {
   const [show, setShow] = useState(false);
@@ -50,8 +52,8 @@ export function SplashScreen() {
       /* ignore */
     }
 
-    // Safety cap so a stalled/long/failed video never holds the page.
-    timerRef.current = setTimeout(() => setShow(false), MAX_DURATION_MS);
+    // Stall-guard only — natural dismissal happens on the video's `onEnded`.
+    timerRef.current = setTimeout(() => setShow(false), SAFETY_TIMEOUT_MS);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -92,8 +94,10 @@ export function SplashScreen() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.45, ease: "easeInOut" }}
           // Cover the entire viewport, above everything (header is z-50).
-          className="fixed inset-0 z-[9999] flex h-[100dvh] w-screen items-center justify-center bg-[#fbf6ef]"
-          aria-hidden="true"
+          // Click/tap anywhere skips the intro.
+          className="fixed inset-0 z-[9999] flex h-[100dvh] w-screen flex-col items-center justify-center gap-5 bg-[#fbf6ef]"
+          onClick={dismiss}
+          role="presentation"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
@@ -115,8 +119,17 @@ export function SplashScreen() {
               controls={false}
               onEnded={dismiss}
               onError={dismiss}
+              aria-hidden="true"
             />
           </motion.div>
+
+          <button
+            type="button"
+            onClick={dismiss}
+            className="rounded-full border border-border/70 bg-card/70 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm transition-colors hover:text-foreground"
+          >
+            Skip intro
+          </button>
         </motion.div>
       )}
     </AnimatePresence>
