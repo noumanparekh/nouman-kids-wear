@@ -74,30 +74,26 @@ export function LocationContact() {
           </div>
         </motion.div>
 
-        {/* Map placeholder */}
-        <motion.a
+        {/* Embedded Google Maps (no API key needed) */}
+        <motion.div
           variants={fadeInUp}
-          href={mapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative flex min-h-[260px] flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-border/70 bg-[linear-gradient(135deg,var(--cream),var(--background))] text-center"
-          aria-label="Open location in Google Maps"
+          className="relative min-h-[260px] overflow-hidden rounded-xl border border-border/70 bg-[linear-gradient(135deg,var(--cream),var(--background))]"
         >
-          {/* Subtle map-grid texture */}
+          {/* Skeleton behind the iframe so the layout doesn't jump while it loads. */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 opacity-[0.5] [background-image:linear-gradient(var(--border)_1px,transparent_1px),linear-gradient(90deg,var(--border)_1px,transparent_1px)] [background-size:28px_28px]"
+            className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,var(--cream),var(--background))] text-muted-foreground"
+          >
+            <MapPin className="size-6 opacity-40" />
+          </div>
+          <iframe
+            src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Nouman Kids Wear location"
+            className="absolute inset-0 h-full w-full border-0"
           />
-          <span className="relative inline-flex size-12 items-center justify-center rounded-full bg-blush text-blush-foreground shadow-sm">
-            <MapPin className="size-6" />
-          </span>
-          <span className="relative text-sm font-medium text-foreground">
-            {SITE.name}
-          </span>
-          <span className="relative max-w-xs px-6 text-xs text-muted-foreground">
-            Interactive map placeholder — tap to open in Google Maps.
-          </span>
-        </motion.a>
+        </motion.div>
       </motion.div>
     </Section>
   );

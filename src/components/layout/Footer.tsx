@@ -48,14 +48,18 @@ export function Footer() {
             </a>
             <a
               href={SITE.social.instagram}
-              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit Nouman Kids Wear on Instagram"
               className="inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
             >
               <InstagramIcon className="size-4" />
             </a>
             <a
               href={SITE.social.facebook}
-              aria-label="Facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit Nouman Kids Wear on Facebook"
               className="inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
             >
               <FacebookIcon className="size-4" />

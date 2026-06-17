@@ -10,10 +10,10 @@ export const SITE = {
   description:
     "Nouman Kids Wear is a kids clothing store in Adilabad, Telangana — boys wear, girls wear, newborn essentials, party & ethnic wear. Browse our latest stock and enquire on WhatsApp.",
   // Digits only, with country code (India = 91). Used to build wa.me links.
-  whatsappNumber: "919000000000",
+  whatsappNumber: "918498986699",
   // Human-friendly phone for tel: links and display.
-  phoneDisplay: "+91 90000 00000",
-  phoneHref: "+919000000000",
+  phoneDisplay: "+91 84989 86699",
+  phoneHref: "+918498986699",
   email: "noumankidswear@example.com",
   address: {
     line1: "Main Road, Near Clock Tower",
@@ -29,8 +29,8 @@ export const SITE = {
   ],
   social: {
     justdial: "#",
-    instagram: "#",
-    facebook: "#",
+    instagram: "https://www.instagram.com/noumankidswear_nkw/",
+    facebook: "https://www.facebook.com/share/1JgKoMxRhM/",
   },
 } as const;
 
