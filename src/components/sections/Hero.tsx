@@ -50,7 +50,7 @@ export function Hero() {
       />
       <HangerDoodle className="pointer-events-none absolute right-[4%] bottom-[16%] hidden size-12 text-lilac-foreground/25 lg:block" />
 
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-8 px-3.5 pb-12 pt-20 sm:gap-10 sm:px-6 sm:pb-16 sm:pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:pb-20 lg:pt-28">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-8 bg-white px-3 pb-10 pt-16 sm:gap-10 sm:px-5 sm:pb-14 sm:pt-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:pb-16 lg:pt-24">
         {/* Copy */}
         <motion.div
           variants={staggerContainer}

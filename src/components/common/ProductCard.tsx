@@ -35,23 +35,23 @@ export function ProductCard({
     <motion.article
       variants={fadeInUp}
       className={cn(
-        "group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-300 ease-out hover:-translate-y-1 hover:border-blush-foreground/30 hover:shadow-[0_18px_40px_-18px_rgba(120,70,90,0.35)]",
+        "group flex flex-col overflow-hidden rounded-lg border border-border/40 bg-white transition-all duration-200 ease-out hover:shadow-md",
         className,
       )}
     >
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted/30">
         <Image
           src={product.image}
           alt={`${product.name} — ${CATEGORY_LABELS[product.category]} at Nouman Kids Wear, Adilabad`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
-          className="object-cover object-[center_top] transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+          className="object-cover object-[center_top] transition-transform duration-300 ease-out group-hover:scale-105"
           priority={priority}
         />
         {product.badge && (
           <span
             className={cn(
-              "absolute left-2.5 top-2.5 rounded-full px-2.5 py-0.5 text-[0.65rem] font-medium",
+              "absolute left-2 top-2 rounded px-2 py-0.5 text-[0.65rem] font-medium shadow-sm",
               badgeStyles[product.badge] ?? "bg-secondary text-secondary-foreground",
             )}
           >
@@ -60,46 +60,50 @@ export function ProductCard({
         )}
       </div>
 
-      <div className={cn("flex flex-1 flex-col p-3", compact && "p-2.5 sm:p-3")}>
-        <p className="eyebrow">{CATEGORY_LABELS[product.category]}</p>
+      <div className={cn("flex flex-1 flex-col gap-1 p-2.5", compact && "p-2 sm:p-2.5")}>
         <h3
           className={cn(
-            "mt-1 font-medium leading-snug text-foreground",
-            compact ? "text-[0.82rem] sm:text-sm" : "text-[0.88rem] sm:text-[0.95rem]",
+            "line-clamp-2 font-medium leading-tight text-foreground",
+            compact ? "text-[0.82rem] sm:text-sm" : "text-sm sm:text-[0.92rem]",
           )}
         >
           {product.name}
         </h3>
 
+        <p className="text-[0.7rem] text-muted-foreground sm:text-[0.72rem]">
+          {CATEGORY_LABELS[product.category]}
+        </p>
+
         {/* Age range display */}
         {product.ageRangeDisplay && (
-          <p className="mt-1.5 text-[0.68rem] text-muted-foreground sm:text-[0.7rem]">
-            <span className="font-medium">Age:</span> {product.ageRangeDisplay}
+          <p className="text-[0.68rem] text-muted-foreground/80 sm:text-[0.7rem]">
+            Age: {product.ageRangeDisplay}
           </p>
         )}
 
-        {/* Size display - only show if sizes exist */}
+        {/* Size display - compact badges */}
         {product.sizes.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {product.sizes.slice(0, compact ? 3 : 4).map((size) => (
+          <div className="mt-0.5 flex flex-wrap gap-1">
+            {product.sizes.slice(0, compact ? 2 : 3).map((size) => (
               <span
                 key={size}
-                className="rounded-md border border-border/70 px-1.5 py-0.5 text-[0.62rem] text-muted-foreground sm:text-[0.65rem]"
+                className="rounded border border-border/60 px-1.5 py-0.5 text-[0.6rem] text-muted-foreground sm:text-[0.62rem]"
               >
-                Size: {size}
+                {size}
               </span>
             ))}
           </div>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5 sm:pt-3">
-          <span className="text-[0.68rem] font-medium uppercase tracking-wide text-muted-foreground sm:text-[0.7rem]">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1.5 sm:pt-2">
+          <span className="text-[0.7rem] font-semibold text-foreground sm:text-[0.72rem]">
             {product.price}
           </span>
           <WhatsAppButton
             href={productEnquiryUrl(product)}
             variant="soft"
             size="sm"
+            className="text-[0.68rem] sm:text-[0.7rem]"
             ariaLabel={`Enquire about ${product.name} on WhatsApp`}
           >
             Enquire

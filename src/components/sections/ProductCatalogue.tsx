@@ -184,7 +184,7 @@ export function ProductCatalogue() {
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-4"
+          className="mt-5 grid grid-cols-3 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 lg:gap-3.5"
         >
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />

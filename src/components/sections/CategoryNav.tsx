@@ -28,32 +28,26 @@ export function CategoryNav() {
         initial="hidden"
         whileInView="show"
         viewport={viewportOnce}
-        className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 lg:grid-cols-7"
+        className="no-scrollbar mt-5 flex gap-2 overflow-x-auto pb-2 sm:mt-6 sm:grid sm:grid-cols-3 sm:gap-2.5 lg:grid-cols-7"
       >
         {CATEGORIES.map((category) => (
-          <motion.li key={category.slug} variants={fadeInUp}>
+          <motion.li key={category.slug} variants={fadeInUp} className="shrink-0 sm:shrink">
             <a
               href="#catalogue"
-              className="group flex h-full flex-col justify-between gap-3 rounded-2xl border border-border/50 bg-card p-3.5 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_12px_28px_-16px_rgba(120,70,90,0.4)]"
+              className={cn(
+                "flex h-full items-center gap-2 whitespace-nowrap rounded-full border border-border/50 bg-white px-3.5 py-2 text-sm font-medium text-foreground transition-all duration-200 hover:border-foreground/30 hover:bg-muted/50 sm:flex-col sm:justify-center sm:gap-1.5 sm:rounded-lg sm:p-3",
+              )}
             >
               <span
                 className={cn(
-                  "neo-sm inline-flex size-9 items-center justify-center rounded-xl text-sm font-semibold",
+                  "flex size-7 items-center justify-center rounded-full text-xs font-semibold sm:size-9 sm:rounded-lg sm:text-sm",
                   ACCENT_SOFT[category.accent],
                 )}
                 aria-hidden="true"
               >
                 {category.label.charAt(0)}
               </span>
-              <span>
-                <span className="flex items-center gap-1 text-sm font-medium leading-tight text-foreground">
-                  {category.label}
-                  <ArrowUpRight className="size-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                </span>
-                <span className="mt-0.5 block text-[0.72rem] leading-snug text-muted-foreground">
-                  {category.description}
-                </span>
-              </span>
+              <span className="text-xs sm:text-sm">{category.label}</span>
             </a>
           </motion.li>
         ))}
