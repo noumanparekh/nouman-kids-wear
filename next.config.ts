@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         hostname: "images.pexels.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+        pathname: "/**",
+      },
     ],
     // Next.js 16 restricts allowed qualities to [75] by default. We use a couple
     // of levels for crisp product imagery.
