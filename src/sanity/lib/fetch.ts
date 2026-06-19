@@ -1,4 +1,4 @@
-import { client } from './client'
+import { clientWithRevalidate } from './client'
 import type { QueryParams } from 'next-sanity'
 
 /**
@@ -8,11 +8,15 @@ import type { QueryParams } from 'next-sanity'
  * SECURITY: This function should only be called from Server Components or API routes.
  * It uses the public Sanity client which doesn't require authentication for published content.
  * Never pass sensitive tokens or config objects through this function to Client Components.
+ * 
+ * REVALIDATION: Uses Next.js cache with 60-second revalidation by default.
+ * This balances content freshness with CDN efficiency for catalogue data.
  */
 export async function fetchSanity<T>(
   query: string,
   params?: QueryParams,
-  fallbackData?: T
+  fallbackData?: T,
+  revalidate: number = 60
 ): Promise<T | null> {
   try {
     // Check if Sanity is configured
@@ -22,7 +26,17 @@ export async function fetchSanity<T>(
       return fallbackData || null
     }
 
-    const data = await client.fetch<T>(query, params || {})
+    // Fetch with Next.js cache revalidation
+    const data = await clientWithRevalidate.fetch<T>(
+      query,
+      params || {},
+      {
+        next: {
+          revalidate, // ISR: revalidate every N seconds
+          tags: ['sanity'], // Allow manual revalidation via tags
+        },
+      }
+    )
     
     // If no data from CMS, use fallback
     if (!data || (Array.isArray(data) && data.length === 0)) {

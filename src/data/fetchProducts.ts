@@ -4,7 +4,10 @@ import { PRODUCTS } from './products'
 import type { Product } from '@/types/product'
 
 /**
- * Fetches all active products from Sanity CMS with fallback to local data
+ * Fetches all active products from Sanity CMS with fallback to local data.
+ * 
+ * Revalidation: 60 seconds - balances freshness with CDN efficiency.
+ * Products don't change frequently, so 1-minute cache is appropriate.
  */
 export async function getProducts(): Promise<Product[]> {
   const sanityProducts = await fetchSanity<any[]>(PRODUCTS_QUERY, {}, PRODUCTS)
@@ -22,7 +25,9 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 /**
- * Fetches new arrival products from Sanity CMS with fallback to local data
+ * Fetches new arrival products from Sanity CMS with fallback to local data.
+ * 
+ * Revalidation: 60 seconds - new arrivals are time-sensitive but not real-time.
  */
 export async function getNewArrivals(): Promise<Product[]> {
   const localNewArrivals = PRODUCTS.filter((p) => p.isNew)
@@ -40,7 +45,9 @@ export async function getNewArrivals(): Promise<Product[]> {
 }
 
 /**
- * Fetches featured products from Sanity CMS with fallback to local data
+ * Fetches featured products from Sanity CMS with fallback to local data.
+ * 
+ * Revalidation: 60 seconds - featured products are curated and stable.
  */
 export async function getFeaturedProducts(): Promise<Product[]> {
   const localFeatured = PRODUCTS.filter((p) => p.featured)
