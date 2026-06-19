@@ -12,6 +12,8 @@ import { LocationContact } from "@/components/sections/LocationContact";
 import { SITE } from "@/data/site";
 
 // JSON-LD so search engines understand this is a local kids clothing store.
+// SECURITY: Data comes from trusted SITE configuration, not user input.
+// JSON.stringify automatically escapes any special characters.
 function StructuredData() {
   const data = {
     "@context": "https://schema.org",

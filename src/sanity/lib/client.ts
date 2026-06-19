@@ -1,11 +1,20 @@
 import { createClient } from 'next-sanity'
 
+/**
+ * Public Sanity client for reading published content.
+ * 
+ * SECURITY: Uses only NEXT_PUBLIC_ environment variables, which are safe
+ * to expose to the browser. No authentication token is required for reading
+ * published content from Sanity.
+ * 
+ * Project ID and dataset are public information and not sensitive.
+ */
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-01-01',
-  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
-  perspective: 'published',
+  useCdn: true, // Use CDN for faster reads of published content
+  perspective: 'published', // Only fetch published documents (not drafts)
 })
 
 // Helper to check if Sanity is configured

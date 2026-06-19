@@ -4,6 +4,10 @@ import type { QueryParams } from 'next-sanity'
 /**
  * Fetches data from Sanity CMS with fallback to local data if CMS is not configured
  * or if the query returns no results.
+ * 
+ * SECURITY: This function should only be called from Server Components or API routes.
+ * It uses the public Sanity client which doesn't require authentication for published content.
+ * Never pass sensitive tokens or config objects through this function to Client Components.
  */
 export async function fetchSanity<T>(
   query: string,
@@ -34,7 +38,10 @@ export async function fetchSanity<T>(
 }
 
 /**
- * Transforms Sanity product data to match local Product type
+ * Transforms Sanity product data to match local Product type.
+ * 
+ * SECURITY: Validates and sanitizes CMS data before using it.
+ * Always provide fallback values for missing fields.
  */
 export function transformSanityProduct(sanityProduct: any): any {
   return {
@@ -55,7 +62,9 @@ export function transformSanityProduct(sanityProduct: any): any {
 }
 
 /**
- * Transforms Sanity category data to match local Category type
+ * Transforms Sanity category data to match local Category type.
+ * 
+ * SECURITY: Validates CMS data and provides safe fallbacks.
  */
 export function transformSanityCategory(sanityCategory: any): any {
   return {

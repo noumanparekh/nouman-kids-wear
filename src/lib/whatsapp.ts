@@ -2,7 +2,12 @@ import { CATEGORY_LABELS } from "@/data/categories";
 import { SITE } from "@/data/site";
 import type { Product } from "@/types/product";
 
-/** Build a wa.me deep link with a pre-filled, URL-encoded message. */
+/**
+ * Build a wa.me deep link with a pre-filled, URL-encoded message.
+ * 
+ * SECURITY: Uses encodeURIComponent to prevent injection attacks.
+ * Phone number is from trusted configuration, not user input.
+ */
 export function whatsappUrl(message: string): string {
   const phone = SITE.whatsappNumber.replace(/\D/g, "");
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
@@ -15,7 +20,12 @@ export function generalEnquiryUrl(): string {
   );
 }
 
-/** Per-product enquiry, pre-filled with name, category and available sizes. */
+/**
+ * Per-product enquiry, pre-filled with name, category and available sizes.
+ * 
+ * SECURITY: All product data comes from our database/CMS, not user input.
+ * Even if CMS is compromised, encodeURIComponent prevents injection.
+ */
 export function productEnquiryUrl(product: Product): string {
   const category = CATEGORY_LABELS[product.category] ?? product.category;
   const message = [
