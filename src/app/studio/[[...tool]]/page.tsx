@@ -10,12 +10,13 @@
  */
 
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 
+// Force dynamic rendering for this page
 export const dynamic = 'force-dynamic'
 
 // Dynamically import Studio components to avoid build issues
-const NextStudio = dynamic(
+const NextStudio = dynamicImport(
   () => import('next-sanity/studio').then((mod) => mod.NextStudio),
   {
     ssr: false,
