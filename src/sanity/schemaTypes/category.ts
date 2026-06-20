@@ -2,34 +2,61 @@ import { defineType, defineField } from 'sanity'
 
 export default defineType({
   name: 'category',
-  title: 'Category',
+  title: '📁 Categories',
   type: 'document',
+  icon: () => '📁',
+  groups: [
+    {
+      name: 'content',
+      title: 'Category Details',
+      default: true,
+    },
+    {
+      name: 'display',
+      title: 'Display Settings',
+    },
+    {
+      name: 'advanced',
+      title: 'Advanced',
+    },
+  ],
   fields: [
     defineField({
       name: 'title',
-      title: 'Category Title',
+      title: '📝 Category Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
-      validation: (Rule) => Rule.required(),
+      description: 'Example: Boys Ethnic Wear, Girls Party Wear, Newborn Wear',
+      group: 'content',
+      validation: (Rule) => Rule.required().error('Category name is required'),
     }),
     defineField({
       name: 'description',
-      title: 'Description',
+      title: '💬 Short Description',
       type: 'string',
-      description: 'Short tagline for the category',
+      description: 'Optional tagline for this category (Example: Traditional wear for special occasions)',
+      group: 'content',
+    }),
+    defineField({
+      name: 'image',
+      title: '🖼️ Category Image',
+      type: 'image',
+      description: 'Upload a representative image for this category',
+      options: {
+        hotspot: true,
+      },
+      group: 'content',
+      fields: [
+        {
+          name: 'alt',
+          title: 'Image Description',
+          type: 'string',
+          description: 'Describe what is in the image (for accessibility)',
+        },
+      ],
     }),
     defineField({
       name: 'accent',
-      title: 'Accent Color',
+      title: '🎨 UI Accent Color',
       type: 'string',
       options: {
         list: [
@@ -42,36 +69,36 @@ export default defineType({
         layout: 'radio',
       },
       initialValue: 'blush',
-      description: 'Used only for website UI badge/accent styling, not actual product color',
-    }),
-    defineField({
-      name: 'image',
-      title: 'Category Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        {
-          name: 'alt',
-          title: 'Alt Text',
-          type: 'string',
-        },
-      ],
+      description: '⚠️ This is ONLY for website badge/accent styling, NOT actual product color',
+      group: 'display',
     }),
     defineField({
       name: 'displayOrder',
-      title: 'Display Order',
+      title: '🔢 Display Order',
       type: 'number',
-      description: 'Lower numbers appear first',
+      description: 'Lower numbers appear first on the website (Example: 1, 2, 3, etc.)',
       initialValue: 0,
+      group: 'display',
     }),
     defineField({
       name: 'active',
-      title: 'Active',
+      title: '✅ Show on Website',
       type: 'boolean',
-      description: 'Only active categories will be shown on the website',
+      description: 'Turn off to hide this category from the website without deleting it',
       initialValue: true,
+      group: 'display',
+    }),
+    defineField({
+      name: 'slug',
+      title: 'URL Slug',
+      type: 'slug',
+      description: 'Auto-generated from category name. Used for website URLs.',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+      group: 'advanced',
+      validation: (Rule) => Rule.required().error('Click "Generate" to create a slug'),
     }),
   ],
   preview: {
@@ -79,11 +106,12 @@ export default defineType({
       title: 'title',
       media: 'image',
       active: 'active',
+      accent: 'accent',
     },
-    prepare({ title, media, active }) {
+    prepare({ title, media, active, accent }) {
       return {
-        title: title,
-        subtitle: active ? 'Active' : 'Inactive',
+        title: title || 'Untitled Category',
+        subtitle: `${accent ? accent + ' • ' : ''}${active ? '✅ Active' : '❌ Inactive'}`,
         media: media,
       }
     },
@@ -93,6 +121,11 @@ export default defineType({
       title: 'Display Order',
       name: 'displayOrder',
       by: [{ field: 'displayOrder', direction: 'asc' }],
+    },
+    {
+      title: 'Category Name (A-Z)',
+      name: 'nameAsc',
+      by: [{ field: 'title', direction: 'asc' }],
     },
   ],
 })

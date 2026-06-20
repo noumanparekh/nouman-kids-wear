@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 
-import { PRODUCTS } from "@/data/products";
 import { staggerContainer, viewportOnce } from "@/lib/animations";
 import { generalEnquiryUrl } from "@/lib/whatsapp";
 import { Section, SectionHeading } from "@/components/common/Section";
@@ -14,11 +13,14 @@ interface NewArrivalsProps {
   products?: Product[];
 }
 
-export function NewArrivals({ products: productsProp }: NewArrivalsProps) {
-  // Fallback to local NEW_ARRIVALS data if products not provided
-  const fallbackProducts = PRODUCTS.filter((p) => p.isNew);
-  const allProducts = productsProp || fallbackProducts;
-  const products = allProducts.slice(0, 8);
+export function NewArrivals({ products }: NewArrivalsProps) {
+  // If no products provided or empty array, don't render the section
+  if (!products || products.length === 0) {
+    return null
+  }
+
+  // Limit to maximum 8 for display (though homepage already limits to 4)
+  const displayProducts = products.slice(0, 8);
 
   return (
     <Section id="new-arrivals">
@@ -45,7 +47,7 @@ export function NewArrivals({ products: productsProp }: NewArrivalsProps) {
         viewport={viewportOnce}
         className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4"
       >
-        {products.map((product, i) => (
+        {displayProducts.map((product, i) => (
           <ProductCard
             key={product.id}
             product={product}

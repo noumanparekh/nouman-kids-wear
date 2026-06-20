@@ -9,43 +9,34 @@ import { OnesieDoodle, TeddyDoodle } from "@/components/common/Doodles";
 import { cn } from "@/lib/utils";
 import type { GalleryImage } from "@/data/fetchGalleryImages";
 
-// Fallback gallery images when CMS data not provided
-const FALLBACK_GALLERY: GalleryImage[] = [
-  {
-    id: '1',
-    src: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=1000&q=80",
-    alt: "Kidswear store interior with neatly arranged racks",
-    span: "sm:col-span-2 sm:row-span-2",
-  },
-  {
-    id: '2',
-    src: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=700&q=80",
-    alt: "Display of folded children's clothing",
-  },
-  {
-    id: '3',
-    src: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=700&q=80",
-    alt: "Colourful kids outfits on hangers",
-  },
-  { 
-    id: '4',
-    src: null, 
-    alt: "More store photos coming soon" 
-  },
-  {
-    id: '5',
-    src: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=700&q=80",
-    alt: "Boutique shelves styled with kidswear",
-  },
-];
-
 interface StoreGalleryProps {
   galleryImages?: GalleryImage[];
 }
 
 export function StoreGallery({ galleryImages }: StoreGalleryProps) {
-  // Fallback to local GALLERY data if galleryImages not provided
-  const gallery = galleryImages || FALLBACK_GALLERY;
+  // If no images provided or empty array, show empty state
+  if (!galleryImages || galleryImages.length === 0) {
+    return (
+      <Section>
+        <SectionHeading
+          eyebrow="Inside the shop"
+          title="Store gallery"
+          description="Photos of our Adilabad store will appear here soon."
+        />
+        <div className="mt-8 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card/40 px-6 py-14 text-center">
+          <OnesieDoodle className="doodle-float size-10 text-blush-foreground/60" />
+          <p className="text-sm font-medium text-foreground">
+            Gallery photos coming soon
+          </p>
+          <p className="max-w-sm text-xs text-muted-foreground">
+            We're adding photos of our store. Visit us in Adilabad to see our collection!
+          </p>
+        </div>
+      </Section>
+    )
+  }
+
+  const gallery = galleryImages;
   return (
     <Section>
       <SectionHeading

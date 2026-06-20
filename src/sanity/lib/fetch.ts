@@ -2,27 +2,40 @@ import { clientWithRevalidate, isSanityConfigured } from './client'
 import type { QueryParams } from 'next-sanity'
 
 /**
- * Fetches data from Sanity CMS with fallback to local data if CMS is not configured
- * or if the query returns no results.
+ * Result of a Sanity fetch operation.
+ * Distinguishes between "not configured", "configured but empty", and "error".
+ */
+export type FetchResult<T> = 
+  | { type: 'not-configured'; data: null }
+  | { type: 'success'; data: T }
+  | { type: 'empty'; data: null }
+  | { type: 'error'; data: null; error: Error }
+
+/**
+ * Fetches data from Sanity CMS with proper fallback handling.
  * 
- * SECURITY: This function should only be called from Server Components or API routes.
- * It uses the public Sanity client which doesn't require authentication for published content.
- * Never pass sensitive tokens or config objects through this function to Client Components.
+ * BEHAVIOR:
+ * - If CMS NOT configured → return 'not-configured' (use fallback data)
+ * - If CMS configured and returns data → return 'success' with data
+ * - If CMS configured but returns empty → return 'empty' (show empty state, NOT fallback)
+ * - If CMS configured but fetch errors → return 'error' (show error message, NOT fallback)
  * 
- * REVALIDATION: Uses Next.js cache with 60-second revalidation by default.
- * This balances content freshness with CDN efficiency for catalogue data.
+ * This ensures that once CMS is configured, it becomes the source of truth.
+ * Empty results from CMS mean "no content exists", not "use fallback".
+ * 
+ * SECURITY: Only call from Server Components. Uses public client for published content.
+ * REVALIDATION: 60-second ISR by default.
  */
 export async function fetchSanity<T>(
   query: string,
   params?: QueryParams,
-  fallbackData?: T,
   revalidate: number = 60
-): Promise<T | null> {
+): Promise<FetchResult<T>> {
   try {
-    // If Sanity is not configured, return fallback immediately
+    // If Sanity is not configured, signal to use fallback
     if (!isSanityConfigured || !clientWithRevalidate) {
-      console.log('[Sanity] CMS not configured - using fallback data')
-      return fallbackData || null
+      console.log('[Sanity] CMS not configured - caller should use fallback data')
+      return { type: 'not-configured', data: null }
     }
 
     // Fetch with Next.js cache revalidation
@@ -37,17 +50,18 @@ export async function fetchSanity<T>(
       }
     )
     
-    // If no data from CMS, use fallback
+    // If CMS returned no data, it means the client intentionally has no content
+    // Do NOT use fallback - show empty state instead
     if (!data || (Array.isArray(data) && data.length === 0)) {
-      console.log('[Sanity] No data from CMS - using fallback data')
-      return fallbackData || null
+      console.log('[Sanity] CMS configured but returned empty - showing empty state')
+      return { type: 'empty', data: null }
     }
 
-    console.log('[Sanity] Fetched data from CMS')
-    return data
+    console.log('[Sanity] Fetched data from CMS successfully')
+    return { type: 'success', data }
   } catch (error) {
     console.error('[Sanity] Error fetching from CMS:', error)
-    return fallbackData || null
+    return { type: 'error', data: null, error: error as Error }
   }
 }
 

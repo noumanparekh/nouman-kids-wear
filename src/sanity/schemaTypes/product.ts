@@ -4,29 +4,45 @@ export default defineType({
   name: 'product',
   title: 'Product',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'basic',
+      title: '📦 Basic Product Details',
+      options: { collapsible: true, collapsed: false },
+    },
+    {
+      name: 'images',
+      title: '📸 Product Images',
+      options: { collapsible: true, collapsed: false },
+    },
+    {
+      name: 'display',
+      title: '🎯 Website Display Settings',
+      options: { collapsible: true, collapsed: false },
+    },
+    {
+      name: 'advanced',
+      title: '⚙️ Advanced/SEO',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     defineField({
       name: 'name',
       title: 'Product Name',
       type: 'string',
-      validation: (Rule) => Rule.required().max(60).warning('Keep product names concise for better mobile display'),
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: {
-        source: 'name',
-        maxLength: 96,
-      },
-      validation: (Rule) => Rule.required(),
+      fieldset: 'basic',
+      validation: (Rule) => Rule.required().max(60).warning('Keep product names under 60 characters for better mobile display'),
+      description: 'Product name as shown on website (max 60 characters)',
     }),
     defineField({
       name: 'category',
       title: 'Category',
       type: 'reference',
       to: [{ type: 'category' }],
+      fieldset: 'basic',
       validation: (Rule) => Rule.required(),
+      description: 'Select product category (Boys Wear, Girls Wear, etc.)',
     }),
     defineField({
       name: 'gender',
@@ -40,6 +56,7 @@ export default defineType({
         ],
         layout: 'radio',
       },
+      fieldset: 'basic',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -55,13 +72,15 @@ export default defineType({
         ],
         layout: 'dropdown',
       },
+      fieldset: 'basic',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'ageRangeDisplay',
       title: 'Age Range Display',
       type: 'string',
-      description: 'Customer-friendly age range (e.g., "1–14 Years", "4–10 Years")',
+      fieldset: 'basic',
+      description: 'Example: "1–14 Years" or "4–10 Years" - This shows on the product card',
       placeholder: '4–10 Years',
     }),
     defineField({
@@ -69,7 +88,8 @@ export default defineType({
       title: 'Available Sizes',
       type: 'array',
       of: [{ type: 'string' }],
-      description: 'Add available sizes (e.g., "2-3Y", "4-5Y", "16×40")',
+      fieldset: 'basic',
+      description: 'Add sizes one by one (e.g., "2-3Y", "4-5Y", "16×40")',
     }),
     defineField({
       name: 'colors',
@@ -100,14 +120,16 @@ export default defineType({
           { title: 'Gold', value: 'Gold' },
         ],
       },
-      description: 'Select the actual product colors (not category accent)',
+      fieldset: 'basic',
+      description: 'Select the actual product colors (separate from category styling)',
     }),
     defineField({
       name: 'priceText',
       title: 'Price Text',
       type: 'string',
       initialValue: 'Price on request',
-      description: 'Default: "Price on request". Change only if needed.',
+      fieldset: 'basic',
+      description: 'Leave as "Price on request" unless you want to show a specific price',
     }),
     defineField({
       name: 'images',
@@ -122,14 +144,16 @@ export default defineType({
           fields: [
             {
               name: 'alt',
-              title: 'Alt Text',
+              title: 'Image Description',
               type: 'string',
-              description: 'Describe the image for accessibility',
+              description: 'Describe the image (e.g., "Boys maroon kurta front view")',
             },
           ],
         },
       ],
+      fieldset: 'images',
       validation: (Rule) => Rule.required().min(1).warning('Add at least one product image'),
+      description: 'Upload product images - first image will be the main display image',
     }),
     defineField({
       name: 'badge',
@@ -144,19 +168,23 @@ export default defineType({
           { title: 'Limited', value: 'Limited' },
         ],
       },
+      fieldset: 'display',
+      description: 'Add a badge to highlight this product (optional)',
     }),
     defineField({
       name: 'isNewArrival',
-      title: 'New Arrival',
+      title: '✨ Mark as New Arrival',
       type: 'boolean',
-      description: 'Show in New Arrivals section',
+      fieldset: 'display',
+      description: 'Turn ON to show in "New Arrivals" section on homepage',
       initialValue: false,
     }),
     defineField({
       name: 'isFeatured',
-      title: 'Featured Product',
+      title: '⭐ Mark as Featured',
       type: 'boolean',
-      description: 'Show in featured/highlighted sections',
+      fieldset: 'display',
+      description: 'Turn ON to highlight this product in featured sections',
       initialValue: false,
     }),
     defineField({
@@ -171,35 +199,52 @@ export default defineType({
         ],
         layout: 'radio',
       },
+      fieldset: 'display',
       initialValue: 'available',
+    }),
+    defineField({
+      name: 'active',
+      title: '👁️ Show on Website',
+      type: 'boolean',
+      fieldset: 'display',
+      description: 'Turn OFF to hide from website without deleting the product',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'displayOrder',
+      title: 'Display Order',
+      type: 'number',
+      fieldset: 'display',
+      description: 'Lower numbers appear first in the catalogue (e.g., 1, 2, 3...)',
+      initialValue: 0,
     }),
     defineField({
       name: 'description',
       title: 'Description',
       type: 'text',
       rows: 3,
-      description: 'Brief product description',
+      fieldset: 'advanced',
+      description: 'Optional: Brief product description',
+    }),
+    defineField({
+      name: 'slug',
+      title: 'URL Slug',
+      type: 'slug',
+      options: {
+        source: 'name',
+        maxLength: 96,
+      },
+      fieldset: 'advanced',
+      validation: (Rule) => Rule.required(),
+      description: 'Auto-generated from product name - click "Generate" button',
     }),
     defineField({
       name: 'whatsappMessage',
       title: 'Custom WhatsApp Message',
       type: 'text',
       rows: 2,
-      description: 'Optional custom message when customer enquires via WhatsApp',
-    }),
-    defineField({
-      name: 'displayOrder',
-      title: 'Display Order',
-      type: 'number',
-      description: 'Lower numbers appear first',
-      initialValue: 0,
-    }),
-    defineField({
-      name: 'active',
-      title: 'Active',
-      type: 'boolean',
-      description: 'Only active products will be shown on the website',
-      initialValue: true,
+      fieldset: 'advanced',
+      description: 'Optional: Custom message when customer enquires via WhatsApp',
     }),
   ],
   preview: {
@@ -208,11 +253,18 @@ export default defineType({
       category: 'category.title',
       media: 'images.0',
       active: 'active',
+      isNew: 'isNewArrival',
+      isFeatured: 'isFeatured',
     },
-    prepare({ title, category, media, active }) {
+    prepare({ title, category, media, active, isNew, isFeatured }) {
+      const badges = []
+      if (!active) badges.push('❌ Hidden')
+      if (isNew) badges.push('✨ New')
+      if (isFeatured) badges.push('⭐ Featured')
+      
       return {
         title: title,
-        subtitle: `${category || 'No category'} ${active ? '' : '(Inactive)'}`,
+        subtitle: `${category || 'No category'}${badges.length > 0 ? ' • ' + badges.join(' • ') : ''}`,
         media: media,
       }
     },
@@ -227,6 +279,11 @@ export default defineType({
       title: 'Name A-Z',
       name: 'nameAsc',
       by: [{ field: 'name', direction: 'asc' }],
+    },
+    {
+      title: 'Newest First',
+      name: 'newest',
+      by: [{ field: '_createdAt', direction: 'desc' }],
     },
   ],
 })

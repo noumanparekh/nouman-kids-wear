@@ -27,26 +27,46 @@ export interface StoreInfo {
 }
 
 /**
- * Fetches store information from Sanity CMS with fallback to local data
+ * Fetches store information from Sanity CMS.
+ * 
+ * BEHAVIOR:
+ * - CMS not configured → use local fallback
+ * - CMS configured with store info → use CMS data (source of truth)
+ * - CMS configured but empty → use local fallback (safety fallback only)
+ * - CMS error → use local fallback (safety fallback only)
+ * 
+ * NOTE: Store info should always exist (singleton), so empty/error cases
+ * use fallback as a safety measure, not as normal behavior.
  */
 export async function getStoreInfo(): Promise<StoreInfo> {
-  const sanityStoreInfo = await fetchSanity<any>(STORE_INFO_QUERY, {}, null)
+  const result = await fetchSanity<any>(STORE_INFO_QUERY, {})
   
-  if (!sanityStoreInfo) {
-    // Transform SITE data to match StoreInfo interface
-    return {
-      brandName: SITE.name,
-      tagline: SITE.tagline,
-      description: SITE.description,
-      address: SITE.address,
-      phone: SITE.phoneDisplay,
-      phoneHref: SITE.phoneHref,
-      whatsappNumber: SITE.whatsappNumber,
-      email: SITE.email,
-      hours: SITE.hours.map(h => ({ days: h.days, time: h.time })),
-      social: SITE.social,
-    }
+  // Transform local SITE data to StoreInfo format
+  const localStoreInfo: StoreInfo = {
+    brandName: SITE.name,
+    tagline: SITE.tagline,
+    description: SITE.description,
+    address: SITE.address,
+    phone: SITE.phoneDisplay,
+    phoneHref: SITE.phoneHref,
+    whatsappNumber: SITE.whatsappNumber,
+    email: SITE.email,
+    hours: SITE.hours.map(h => ({ days: h.days, time: h.time })),
+    social: SITE.social,
+  }
+  
+  if (result.type === 'not-configured') {
+    console.log('[Store Info] Using local fallback data (CMS not configured)')
+    return localStoreInfo
   }
 
-  return sanityStoreInfo
+  if (result.type === 'success') {
+    console.log('[Store Info] Using CMS data')
+    return result.data
+  }
+
+  // For store info, empty/error cases use fallback as safety
+  // (singleton should always exist once CMS is set up)
+  console.log('[Store Info] CMS empty or error - using fallback as safety')
+  return localStoreInfo
 }

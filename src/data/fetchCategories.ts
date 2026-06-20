@@ -4,14 +4,32 @@ import { CATEGORIES } from './categories'
 import type { Category } from '@/types/product'
 
 /**
- * Fetches all active categories from Sanity CMS with fallback to local data
+ * Fetches all active categories from Sanity CMS.
+ * 
+ * BEHAVIOR:
+ * - CMS not configured → use local fallback
+ * - CMS configured with categories → use CMS data (source of truth)
+ * - CMS configured but empty → return empty array
+ * - CMS error → return empty array
  */
 export async function getCategories(): Promise<Category[]> {
-  const sanityCategories = await fetchSanity<any[]>(CATEGORIES_QUERY, {})
+  const result = await fetchSanity<any[]>(CATEGORIES_QUERY, {})
   
-  if (!sanityCategories || sanityCategories.length === 0) {
+  if (result.type === 'not-configured') {
+    console.log('[Categories] Using local fallback data (CMS not configured)')
     return CATEGORIES
   }
 
-  return sanityCategories.map(transformSanityCategory)
+  if (result.type === 'success') {
+    console.log(`[Categories] Using CMS data (${result.data.length} categories)`)
+    return result.data.map(transformSanityCategory)
+  }
+
+  if (result.type === 'empty') {
+    console.log('[Categories] CMS configured but empty')
+    return []
+  }
+
+  console.error('[Categories] CMS fetch error')
+  return []
 }

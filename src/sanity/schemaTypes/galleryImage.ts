@@ -2,60 +2,81 @@ import { defineType, defineField } from 'sanity'
 
 export default defineType({
   name: 'galleryImage',
-  title: 'Gallery Image',
+  title: '🖼️ Gallery',
   type: 'document',
+  icon: () => '🖼️',
+  groups: [
+    {
+      name: 'content',
+      title: 'Photo Details',
+      default: true,
+    },
+    {
+      name: 'display',
+      title: 'Display Settings',
+    },
+  ],
   fields: [
     defineField({
       name: 'title',
-      title: 'Title',
+      title: '📝 Photo Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      description: 'Give this photo a descriptive name (Example: Store Front View, Kids Ethnic Section)',
+      group: 'content',
+      validation: (Rule) => Rule.required().error('Photo title is required'),
     }),
     defineField({
       name: 'image',
-      title: 'Image',
+      title: '📷 Upload Photo',
       type: 'image',
+      description: 'Upload a high-quality photo of your store or products',
       options: {
         hotspot: true,
       },
-      validation: (Rule) => Rule.required(),
+      group: 'content',
+      validation: (Rule) => Rule.required().error('Photo is required'),
       fields: [
         {
           name: 'alt',
-          title: 'Alt Text',
+          title: 'Image Description',
           type: 'string',
-          description: 'Describe the image for accessibility',
+          description: 'Describe what is in the photo (helps with accessibility and SEO)',
         },
       ],
     }),
     defineField({
       name: 'section',
-      title: 'Section',
+      title: '📂 Photo Category',
       type: 'string',
+      description: 'What type of photo is this?',
       options: {
         list: [
-          { title: 'Store Interior', value: 'store_interior' },
-          { title: 'Store Exterior', value: 'store_exterior' },
-          { title: 'Product Display', value: 'product_display' },
-          { title: 'Events', value: 'events' },
-          { title: 'Other', value: 'other' },
+          { title: '🏪 Store Interior (inside the shop)', value: 'store_interior' },
+          { title: '🏬 Store Exterior (shop front/outside)', value: 'store_exterior' },
+          { title: '👕 Product Display (clothes on display)', value: 'product_display' },
+          { title: '🎉 Events (special occasions/festivals)', value: 'events' },
+          { title: '📦 Other', value: 'other' },
         ],
+        layout: 'dropdown',
       },
       initialValue: 'store_interior',
+      group: 'display',
     }),
     defineField({
       name: 'displayOrder',
-      title: 'Display Order',
+      title: '🔢 Display Order',
       type: 'number',
-      description: 'Lower numbers appear first',
+      description: 'Lower numbers appear first in the gallery (Example: 1, 2, 3, etc.)',
       initialValue: 0,
+      group: 'display',
     }),
     defineField({
       name: 'active',
-      title: 'Active',
+      title: '✅ Show in Gallery',
       type: 'boolean',
-      description: 'Only active images will be shown in the gallery',
+      description: 'Turn off to hide this photo from the website gallery without deleting it',
       initialValue: true,
+      group: 'display',
     }),
   ],
   preview: {
@@ -66,9 +87,16 @@ export default defineType({
       active: 'active',
     },
     prepare({ title, media, section, active }) {
+      const sectionLabels: Record<string, string> = {
+        store_interior: '🏪 Interior',
+        store_exterior: '🏬 Exterior',
+        product_display: '👕 Products',
+        events: '🎉 Events',
+        other: '📦 Other',
+      }
       return {
-        title: title,
-        subtitle: `${section || 'Gallery'} ${active ? '' : '(Inactive)'}`,
+        title: title || 'Untitled Photo',
+        subtitle: `${sectionLabels[section] || section} ${active ? '✅' : '❌ Hidden'}`,
         media: media,
       }
     },
@@ -78,6 +106,11 @@ export default defineType({
       title: 'Display Order',
       name: 'displayOrder',
       by: [{ field: 'displayOrder', direction: 'asc' }],
+    },
+    {
+      title: 'Section',
+      name: 'section',
+      by: [{ field: 'section', direction: 'asc' }],
     },
   ],
 })

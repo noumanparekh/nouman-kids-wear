@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Filter, X } from "lucide-react";
 
-import { PRODUCTS } from "@/data/products";
 import { CATEGORIES } from "@/data/categories";
 import { AGE_GROUP_OPTIONS, GENDER_OPTIONS } from "@/data/site";
 import { generalEnquiryUrl } from "@/lib/whatsapp";
@@ -83,8 +82,34 @@ interface ProductCatalogueProps {
 }
 
 export function ProductCatalogue({ products: productsProp }: ProductCatalogueProps) {
-  // Fallback to local PRODUCTS data if products not provided
-  const allProducts = productsProp || PRODUCTS;
+  // Use provided products or empty array (no local fallback for catalogue)
+  const allProducts = productsProp || [];
+
+  // If no products at all, show empty state
+  if (allProducts.length === 0) {
+    return (
+      <Section id="catalogue">
+        <SectionHeading
+          eyebrow="Available stock"
+          title="Browse the catalogue"
+          description="Our product catalogue will appear here once items are added."
+        />
+        <div className="mt-8 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card/40 px-6 py-14 text-center">
+          <p className="text-sm font-medium text-foreground">
+            No products available yet
+          </p>
+          <p className="max-w-sm text-xs text-muted-foreground">
+            Products are being added. In the meantime, feel free to message us for availability.
+          </p>
+          <div className="mt-1">
+            <WhatsAppButton href={generalEnquiryUrl()} size="sm">
+              Enquire on WhatsApp
+            </WhatsAppButton>
+          </div>
+        </div>
+      </Section>
+    )
+  }
 
   // All distinct sizes across the catalogue, kept in a sensible display order.
   const ALL_SIZES = useMemo(

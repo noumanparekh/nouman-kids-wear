@@ -2,35 +2,63 @@ import { defineType, defineField } from 'sanity'
 
 export default defineType({
   name: 'featuredCollection',
-  title: 'Featured Collection',
+  title: '⭐ Featured Collections',
   type: 'document',
+  icon: () => '⭐',
+  groups: [
+    {
+      name: 'content',
+      title: 'Collection Details',
+      default: true,
+    },
+    {
+      name: 'display',
+      title: 'Display Settings',
+    },
+    {
+      name: 'advanced',
+      title: 'Advanced',
+    },
+  ],
   fields: [
     defineField({
       name: 'title',
-      title: 'Collection Title',
+      title: '📝 Collection Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
-      validation: (Rule) => Rule.required(),
+      description: 'Example: Festival Special, Wedding Collection, Summer Casuals',
+      group: 'content',
+      validation: (Rule) => Rule.required().error('Collection name is required'),
     }),
     defineField({
       name: 'description',
-      title: 'Description',
+      title: '💬 Description',
       type: 'text',
       rows: 2,
-      description: 'Brief description of the collection',
+      description: 'Brief description of this collection (1-2 lines)',
+      group: 'content',
+    }),
+    defineField({
+      name: 'image',
+      title: '🖼️ Collection Image',
+      type: 'image',
+      description: 'Upload a representative image for this collection',
+      options: {
+        hotspot: true,
+      },
+      group: 'content',
+      validation: (Rule) => Rule.required().error('Collection image is required'),
+      fields: [
+        {
+          name: 'alt',
+          title: 'Image Description',
+          type: 'string',
+          description: 'Describe what is in the image (for accessibility)',
+        },
+      ],
     }),
     defineField({
       name: 'accent',
-      title: 'Accent Color',
+      title: '🎨 UI Accent Color',
       type: 'string',
       options: {
         list: [
@@ -43,37 +71,36 @@ export default defineType({
         layout: 'radio',
       },
       initialValue: 'peach',
-      description: 'Brand color accent for collection cards',
-    }),
-    defineField({
-      name: 'image',
-      title: 'Collection Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-      validation: (Rule) => Rule.required(),
-      fields: [
-        {
-          name: 'alt',
-          title: 'Alt Text',
-          type: 'string',
-        },
-      ],
+      description: 'Brand color accent for this collection card on the website',
+      group: 'display',
     }),
     defineField({
       name: 'displayOrder',
-      title: 'Display Order',
+      title: '🔢 Display Order',
       type: 'number',
-      description: 'Lower numbers appear first',
+      description: 'Lower numbers appear first on the website (Example: 1, 2, 3, etc.)',
       initialValue: 0,
+      group: 'display',
     }),
     defineField({
       name: 'active',
-      title: 'Active',
+      title: '✅ Show on Website',
       type: 'boolean',
-      description: 'Only active collections will be shown on the website',
+      description: 'Turn off to hide this collection from the website without deleting it',
       initialValue: true,
+      group: 'display',
+    }),
+    defineField({
+      name: 'slug',
+      title: 'URL Slug',
+      type: 'slug',
+      description: 'Auto-generated from collection name. Used for website URLs.',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+      group: 'advanced',
+      validation: (Rule) => Rule.required().error('Click "Generate" to create a slug'),
     }),
   ],
   preview: {
@@ -81,11 +108,12 @@ export default defineType({
       title: 'title',
       media: 'image',
       active: 'active',
+      accent: 'accent',
     },
-    prepare({ title, media, active }) {
+    prepare({ title, media, active, accent }) {
       return {
-        title: title,
-        subtitle: active ? 'Active' : 'Inactive',
+        title: title || 'Untitled Collection',
+        subtitle: `${accent ? accent + ' • ' : ''}${active ? '✅ Active' : '❌ Inactive'}`,
         media: media,
       }
     },
@@ -95,6 +123,11 @@ export default defineType({
       title: 'Display Order',
       name: 'displayOrder',
       by: [{ field: 'displayOrder', direction: 'asc' }],
+    },
+    {
+      title: 'Collection Name (A-Z)',
+      name: 'nameAsc',
+      by: [{ field: 'title', direction: 'asc' }],
     },
   ],
 })

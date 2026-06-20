@@ -2,69 +2,80 @@ import { defineType, defineField } from 'sanity'
 
 export default defineType({
   name: 'heroBanner',
-  title: 'Hero Banner',
+  title: 'Homepage Banner',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'content',
+      title: '📝 Banner Content',
+      options: { collapsible: true, collapsed: false },
+    },
+    {
+      name: 'images',
+      title: '🖼️ Background Images',
+      options: { collapsible: true, collapsed: false },
+    },
+    {
+      name: 'buttons',
+      title: '🔘 Buttons (Optional)',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     defineField({
       name: 'headline',
-      title: 'Headline',
+      title: 'Main Heading',
       type: 'string',
-      description: 'Main hero headline (e.g., "Dressed for every little occasion")',
+      description: 'Main headline for the homepage banner (e.g., "Dressed for every little occasion")',
+      fieldset: 'content',
     }),
     defineField({
       name: 'subheadline',
-      title: 'Subheadline',
+      title: 'Subtitle',
       type: 'text',
       rows: 2,
-      description: 'Supporting text below the headline',
+      description: 'Short description below the headline',
+      fieldset: 'content',
     }),
     defineField({
       name: 'backgroundImage',
-      title: 'Background Image (Desktop)',
+      title: 'Background Image',
       type: 'image',
       options: {
         hotspot: true,
       },
-      description: 'Hero background for desktop screens',
+      description: 'Background image for desktop and tablet',
+      fieldset: 'images',
     }),
     defineField({
       name: 'mobileBackgroundImage',
-      title: 'Background Image (Mobile)',
+      title: 'Mobile Background (Optional)',
       type: 'image',
       options: {
         hotspot: true,
       },
-      description: 'Optional separate background for mobile screens',
+      description: 'Optional: Different background for mobile phones',
+      fieldset: 'images',
     }),
     defineField({
       name: 'primaryCtaText',
-      title: 'Primary CTA Text',
+      title: 'Button Text',
       type: 'string',
-      description: 'Primary button text (e.g., "Enquire on WhatsApp")',
+      description: 'Text on the main button (e.g., "Browse Products")',
+      fieldset: 'buttons',
     }),
     defineField({
       name: 'primaryCtaLink',
-      title: 'Primary CTA Link',
+      title: 'Button Link',
       type: 'string',
-      description: 'Link or anchor (e.g., "#catalogue", "https://wa.me/...")',
-    }),
-    defineField({
-      name: 'secondaryCtaText',
-      title: 'Secondary CTA Text',
-      type: 'string',
-      description: 'Secondary button text (e.g., "Browse catalogue")',
-    }),
-    defineField({
-      name: 'secondaryCtaLink',
-      title: 'Secondary CTA Link',
-      type: 'string',
-      description: 'Link or anchor for secondary button',
+      description: 'Where button goes (e.g., "#catalogue" or a URL)',
+      fieldset: 'buttons',
     }),
     defineField({
       name: 'active',
-      title: 'Active',
+      title: 'Show on Homepage',
       type: 'boolean',
-      description: 'Only one hero banner should be active at a time',
+      description: 'Turn on to display this banner on the homepage',
       initialValue: true,
     }),
   ],
@@ -76,8 +87,8 @@ export default defineType({
     },
     prepare({ title, media, active }) {
       return {
-        title: title || 'Hero Banner',
-        subtitle: active ? 'Active' : 'Inactive',
+        title: title || 'Homepage Banner',
+        subtitle: active ? '✅ Active' : '❌ Inactive',
         media: media,
       }
     },

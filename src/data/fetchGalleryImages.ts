@@ -41,29 +41,42 @@ const FALLBACK_GALLERY: GalleryImage[] = [
 ]
 
 /**
- * Fetches gallery images from Sanity CMS with fallback to local data.
+ * Fetches gallery images from Sanity CMS.
+ * 
+ * BEHAVIOR:
+ * - CMS not configured → use local fallback
+ * - CMS configured with images → use CMS data (source of truth)
+ * - CMS configured but empty → return empty array
+ * - CMS error → return empty array
  * 
  * Revalidation: 60 seconds - gallery images are relatively static.
  */
 export async function getGalleryImages(): Promise<GalleryImage[]> {
-  const sanityImages = await fetchSanity<any[]>(GALLERY_IMAGES_QUERY, {}, FALLBACK_GALLERY)
+  const result = await fetchSanity<any[]>(GALLERY_IMAGES_QUERY, {})
   
-  if (!sanityImages || sanityImages.length === 0) {
+  if (result.type === 'not-configured') {
+    console.log('[Gallery] Using local fallback data (CMS not configured)')
     return FALLBACK_GALLERY
   }
 
-  // If we got the fallback, return it as-is
-  if (sanityImages === FALLBACK_GALLERY) {
-    return FALLBACK_GALLERY
+  if (result.type === 'success') {
+    console.log(`[Gallery] Using CMS data (${result.data.length} images)`)
+    // Transform Sanity data to match GalleryImage interface
+    return result.data.map((img) => ({
+      id: img._id,
+      title: img.title || undefined,
+      src: img.image?.asset?.url || null,
+      alt: img.image?.alt || img.title || 'Gallery image',
+      category: img.category || undefined,
+      span: undefined, // Let the component handle grid layout
+    }))
   }
 
-  // Transform Sanity data to match GalleryImage interface
-  return sanityImages.map((img) => ({
-    id: img._id,
-    title: img.title || undefined,
-    src: img.image?.asset?.url || null,
-    alt: img.image?.alt || img.title || 'Gallery image',
-    category: img.category || undefined,
-    span: undefined, // Let the component handle grid layout
-  }))
+  if (result.type === 'empty') {
+    console.log('[Gallery] CMS configured but empty')
+    return []
+  }
+
+  console.error('[Gallery] CMS fetch error')
+  return []
 }

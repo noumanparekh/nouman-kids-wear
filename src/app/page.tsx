@@ -9,7 +9,7 @@ import { FeaturedCollections } from "@/components/sections/FeaturedCollections";
 import { WhyShopWithUs } from "@/components/sections/WhyShopWithUs";
 import { StoreGallery } from "@/components/sections/StoreGallery";
 import { LocationContact } from "@/components/sections/LocationContact";
-import { getProducts, getNewArrivals } from "@/data/fetchProducts";
+import { getProducts, getNewArrivalsForHomepage } from "@/data/fetchProducts";
 import { getCategories } from "@/data/fetchCategories";
 import { getStoreInfo } from "@/data/fetchSiteInfo";
 import { getGalleryImages } from "@/data/fetchGalleryImages";
@@ -53,7 +53,7 @@ export default async function Home() {
   // SECURITY: All fetch functions use safe Sanity queries and transform data
   const [
     products,
-    newArrivals,
+    newArrivalsHomepage,
     categories,
     storeInfo,
     galleryImages,
@@ -61,7 +61,7 @@ export default async function Home() {
     heroBanner,
   ] = await Promise.all([
     getProducts(),
-    getNewArrivals(),
+    getNewArrivalsForHomepage(), // Limited to 4 items for homepage
     getCategories(),
     getStoreInfo(),
     getGalleryImages(),
@@ -70,12 +70,12 @@ export default async function Home() {
   ]);
 
   console.log('[Server] Data sources:', {
-    products: products.length > 0 ? `${products.length} products` : 'fallback',
-    newArrivals: newArrivals.length > 0 ? `${newArrivals.length} new arrivals` : 'fallback',
-    categories: categories.length > 0 ? `${categories.length} categories` : 'fallback',
+    products: products.length > 0 ? `${products.length} products` : 'empty',
+    newArrivalsHomepage: newArrivalsHomepage.length > 0 ? `${newArrivalsHomepage.length} new arrivals (homepage)` : 'empty',
+    categories: categories.length > 0 ? `${categories.length} categories` : 'empty',
     storeInfo: storeInfo.brandName,
-    galleryImages: galleryImages.length > 0 ? `${galleryImages.length} images` : 'fallback',
-    collections: collections.length > 0 ? `${collections.length} collections` : 'fallback',
+    galleryImages: galleryImages.length > 0 ? `${galleryImages.length} images` : 'empty',
+    collections: collections.length > 0 ? `${collections.length} collections` : 'empty',
     heroBanner: heroBanner ? 'CMS banner' : 'default content',
   });
 
@@ -85,9 +85,9 @@ export default async function Home() {
       <SplashScreen />
       <Header storeInfo={storeInfo} />
       <main className="flex-1">
-        <Hero storeInfo={storeInfo} heroBanner={heroBanner} newArrivals={newArrivals} />
+        <Hero storeInfo={storeInfo} heroBanner={heroBanner} newArrivals={newArrivalsHomepage} />
         <CategoryNav categories={categories} />
-        <NewArrivals products={newArrivals} />
+        <NewArrivals products={newArrivalsHomepage} />
         <ProductCatalogue products={products} />
         <FeaturedCollections collections={collections} />
         <WhyShopWithUs />

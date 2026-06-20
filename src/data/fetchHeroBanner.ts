@@ -15,27 +15,40 @@ export interface HeroBanner {
 
 /**
  * Fetches hero banner from Sanity CMS.
- * Returns null if no banner is configured - Hero component will use default content.
+ * 
+ * BEHAVIOR:
+ * - CMS not configured → return null (Hero uses default content)
+ * - CMS configured with banner → use CMS data (source of truth)
+ * - CMS configured but empty → return null (Hero uses default content)
+ * - CMS error → return null (Hero uses default content as safety)
  * 
  * Revalidation: 60 seconds - hero banners are relatively stable.
  */
 export async function getHeroBanner(): Promise<HeroBanner | null> {
-  const sanityBanner = await fetchSanity<any>(HERO_BANNER_QUERY, {}, null)
+  const result = await fetchSanity<any>(HERO_BANNER_QUERY, {})
   
-  if (!sanityBanner) {
+  if (result.type === 'not-configured') {
+    console.log('[Hero Banner] CMS not configured - using default hero content')
     return null
   }
 
-  // Transform Sanity data to match HeroBanner interface
-  return {
-    id: sanityBanner._id,
-    headline: sanityBanner.headline,
-    subheadline: sanityBanner.subheadline || undefined,
-    backgroundImage: sanityBanner.backgroundImage?.asset?.url || undefined,
-    mobileBackgroundImage: sanityBanner.mobileBackgroundImage?.asset?.url || undefined,
-    primaryCtaText: sanityBanner.primaryCtaText || undefined,
-    primaryCtaLink: sanityBanner.primaryCtaLink || undefined,
-    secondaryCtaText: sanityBanner.secondaryCtaText || undefined,
-    secondaryCtaLink: sanityBanner.secondaryCtaLink || undefined,
+  if (result.type === 'success') {
+    console.log('[Hero Banner] Using CMS data')
+    // Transform Sanity data to match HeroBanner interface
+    return {
+      id: result.data._id,
+      headline: result.data.headline,
+      subheadline: result.data.subheadline || undefined,
+      backgroundImage: result.data.backgroundImage?.asset?.url || undefined,
+      mobileBackgroundImage: result.data.mobileBackgroundImage?.asset?.url || undefined,
+      primaryCtaText: result.data.primaryCtaText || undefined,
+      primaryCtaLink: result.data.primaryCtaLink || undefined,
+      secondaryCtaText: result.data.secondaryCtaText || undefined,
+      secondaryCtaLink: result.data.secondaryCtaLink || undefined,
+    }
   }
+
+  // For empty/error cases, use default hero content as safety
+  console.log('[Hero Banner] CMS empty or error - using default hero content')
+  return null
 }

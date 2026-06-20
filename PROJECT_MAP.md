@@ -350,12 +350,113 @@ npm run lint              # ESLint check
 
 ## Future Enhancements (Not Yet Implemented)
 
-- **Sanity CMS integration**: Product/category management (dependencies already installed)
-- **Real product images**: Replace Unsplash URLs with client photos
-- **Store gallery photos**: Add real shop interior/exterior images
 - **Advanced filters**: Price range, brand, occasion (when product data expands)
 - **Search**: Full-text product search (when inventory grows)
 - **Analytics**: Google Analytics / Plausible (privacy-friendly)
+
+---
+
+## Sanity CMS Structure ✅
+
+**Status**: Fully integrated with shop owner-friendly Studio
+
+### CMS Files
+
+| File | Purpose |
+|------|---------|
+| `sanity.config.ts` | Sanity Studio configuration |
+| `src/sanity/structure.ts` | Custom Studio sidebar structure |
+| `src/sanity/lib/client.ts` | Sanity clients (read/write) |
+| `src/sanity/lib/fetch.ts` | Data fetching utilities with fallbacks |
+| `src/sanity/lib/queries.ts` | GROQ queries for all content types |
+| `src/sanity/lib/image.ts` | Image URL builder for Sanity CDN |
+| `src/sanity/schemaTypes/` | All schema definitions |
+
+### Schema Types
+
+| Schema | Purpose | Key Fields | Notes |
+|--------|---------|------------|-------|
+| `product.ts` | Products | name, category, images, sizes, colors, badge, isNew, isFeatured | Organized in fieldsets: Basic, Images, Display, Advanced/SEO |
+| `category.ts` | Categories | title, description, image, accent color, display order | Grouped: Content, Display, Advanced |
+| `storeInfo.ts` | Store contact info | name, phone, WhatsApp, address, hours, social links | **Singleton** — only one document |
+| `heroBanner.ts` | Homepage banner | heading, subtitle, images, button text/link | **Singleton** — only one document |
+| `galleryImage.ts` | Store photos | title, image, section (interior/exterior/etc.) | Grouped: Photo Details, Display |
+| `featuredCollection.ts` | Featured collections | title, description, image, accent color | Grouped: Content, Display, Advanced |
+
+### Data Fetching Utilities
+
+| File | Purpose | Fallback |
+|------|---------|----------|
+| `fetchProducts.ts` | Fetch products from CMS | Uses `PRODUCTS` array |
+| `fetchCategories.ts` | Fetch categories from CMS | Uses `CATEGORIES` array |
+| `fetchSiteInfo.ts` | Fetch store info from CMS | Uses `SITE` object |
+| `fetchGalleryImages.ts` | Fetch gallery photos from CMS | Uses empty array |
+| `fetchFeaturedCollections.ts` | Fetch collections from CMS | Uses `COLLECTIONS` array |
+| `fetchHeroBanner.ts` | Fetch hero content from CMS | Uses default hero content |
+
+**How it works**:
+1. All fetch utilities check if Sanity is configured (`isSanityConfigured`)
+2. If configured, fetch from CMS using GROQ queries
+3. If not configured or fetch fails, use local data from `src/data/`
+4. Site works perfectly without CMS credentials (graceful degradation)
+
+### Studio Access
+
+**URL**: `http://localhost:3000/studio` (dev) or `https://yourdomain.com/studio` (production)
+
+**Authentication**: Sanity OAuth (Google, GitHub, email)
+
+**Shop Owner Dashboard**:
+- Simplified sidebar with clear labels and emoji icons:
+  - 📦 Products
+  - 📁 Categories
+  - 🏪 Store Information (singleton)
+  - 🎯 Homepage Banner (singleton)
+  - 🖼️ Gallery
+  - ⭐ Featured Collections
+- All schemas have helpful descriptions in plain language
+- Fields organized into logical groups (Basic, Images, Display, Advanced)
+- Document previews show thumbnails and key info
+- Slug auto-generation (minimal technical exposure)
+- Active/inactive toggles (hide without deleting)
+- Display order controls (sorting)
+
+### Client Guide
+
+**File**: `CLIENT_CMS_GUIDE.md`
+
+Comprehensive step-by-step instructions for shop owner:
+- How to access the dashboard
+- How to add/edit products (with field examples)
+- How to upload product photos
+- How to mark products as "New Arrival" or "Featured"
+- How to hide products without deleting
+- How to update store information
+- How to manage homepage banner
+- How to add gallery photos
+- How to create featured collections
+- Common questions and troubleshooting
+- What NOT to do (avoid accidental data issues)
+
+### Environment Variables
+
+Required (if using CMS):
+```
+NEXT_PUBLIC_SANITY_PROJECT_ID=ql5kwpe9
+NEXT_PUBLIC_SANITY_DATASET=production
+NEXT_PUBLIC_SANITY_API_VERSION=2024-01-01
+SANITY_API_TOKEN=<token>  # Only needed for preview/draft mode
+```
+
+See `.env.local.example` for details.
+
+### Product Colors Feature
+
+Added as part of CMS integration:
+- Products now have `colors` array field (separate from category accent color)
+- 20 color options available: Black, White, Mint Green, Olive Green, Maroon, Dusty Pink, Rose Gold, Peach, Beige, Blue, Cream, Multi Color, etc.
+- Displayed as compact pills on product cards
+- Category accent color clearly marked as "UI styling only, not product color"
 
 ---
 
