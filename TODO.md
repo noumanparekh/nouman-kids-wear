@@ -210,8 +210,8 @@ Organized by priority. Complete Phase 1 before launch. Phase 2 can be iterative 
 ---
 
 ### 13. Integrate Sanity CMS ✅ COMPLETED
-**Status**: Full CMS integration with graceful fallbacks + shop owner-friendly Studio  
-**Files**: See `SANITY_CMS_INTEGRATION.md` for complete documentation, `CLIENT_CMS_GUIDE.md` for shop owner guide
+**Status**: Full CMS integration with seed data imported + shop owner-friendly Studio  
+**Files**: See `SANITY_CMS_INTEGRATION.md`, `CLIENT_CMS_GUIDE.md`, `SANITY_SEED_README.md`
 
 **Completed**:
 - Installed `@sanity/vision` dependency
@@ -224,9 +224,9 @@ Organized by priority. Complete Phase 1 before launch. Phase 2 can be iterative 
   - `featuredCollection` - Featured collection cards
   - `storeInfo` - Store contact and business info
 - Created client, queries, and data fetching utilities
-- Added fetch layers with automatic fallback to local data:
-  - `fetchProducts.ts` - Products with fallback to `PRODUCTS`
-  - `fetchCategories.ts` - Categories with fallback to `CATEGORIES`
+- Added fetch layers with **Sanity as source of truth**:
+  - `fetchProducts.ts` - Products from CMS (14 imported via seed)
+  - `fetchCategories.ts` - Categories from CMS (4 imported via seed)
   - `fetchSiteInfo.ts` - Store info with fallback to `SITE`
 - Studio route created at `/studio` (shows setup instructions)
 - Updated `next.config.ts` for Sanity CDN images
@@ -241,9 +241,23 @@ Organized by priority. Complete Phase 1 before launch. Phase 2 can be iterative 
   - Slug auto-generation (minimal technical exposure)
   - Color options for products (20 colors available)
   - Created comprehensive `CLIENT_CMS_GUIDE.md` with step-by-step instructions
-- **Site works perfectly WITHOUT Sanity credentials** (uses local data)
-- Build passes with 0 errors
-- Ready for CMS connection when client is ready
+- **Initial catalogue seeded via npm script**:
+  - Created `scripts/seed-sanity.ts` - Uploads images and creates documents
+  - Created `scripts/check-sanity.ts` - Verification script
+  - Seeded 4 categories, 14 products with real images
+  - Images successfully uploaded to Sanity CDN
+  - Products fully editable in Sanity Studio
+  - Seed script uses stable IDs (safe to re-run)
+- **Fixed Next.js 16 IPv6 image issue**:
+  - Updated `npm run dev` with `--hostname 0.0.0.0` flag
+  - Images from Sanity CDN now load correctly in development
+  - Issue documented in `SANITY_SEED_README.md`
+- **Site works with Sanity CMS as source of truth**:
+  - CMS not configured → uses local fallback data
+  - CMS configured but empty → shows empty states (NO fallback)
+  - CMS configured with data → uses ONLY CMS data
+  - Build passes with 0 errors
+  - Ready for production deployment
 
 **Shop Owner Benefits**:
 - User-friendly CMS interface (feels like shop dashboard, not developer tool)
@@ -257,12 +271,22 @@ Organized by priority. Complete Phase 1 before launch. Phase 2 can be iterative 
 - Clear field labels with examples
 - Helpful descriptions guide data entry
 
-**Next Steps**:
-1. Create Sanity project at https://sanity.io/manage
-2. Add credentials to `.env.local` (see `.env.local.example`)
-3. Visit `/studio` to access CMS
-4. Follow `CLIENT_CMS_GUIDE.md` to populate content
-5. Share guide with shop owner for ongoing content management
+**Current State**:
+- ✅ Sanity project created (ID: `ql5kwpe9`)
+- ✅ Initial catalogue imported (14 products, 4 categories)
+- ✅ Products visible and editable in Studio
+- ✅ Website displays CMS products (confirmed via console logs)
+- ✅ Images loading correctly after dev server restart
+- ✅ Build passing with 0 errors
+
+**Next Steps for Shop Owner**:
+1. Visit http://localhost:3000/studio to access CMS
+2. Sign in with Sanity account
+3. Review imported products and edit as needed
+4. Add store information (Store Information section)
+5. Add homepage banner content (Homepage Banner section)
+6. Add store gallery images (Gallery section)
+7. Follow `CLIENT_CMS_GUIDE.md` for detailed instructions
 
 ---
 

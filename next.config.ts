@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
     // Next.js 16 restricts allowed qualities to [75] by default. We use a couple
     // of levels for crisp product imagery.
     qualities: [70, 80, 90],
+    // Disable private IP check for Sanity CDN (IPv6 issue in development)
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    unoptimized: false,
   },
 
   // Security headers

@@ -64,8 +64,8 @@ export function CategoryNav({ categories }: CategoryNavProps) {
         viewport={viewportOnce}
         className="no-scrollbar mt-5 flex gap-2 overflow-x-auto pb-2 sm:mt-6 sm:grid sm:grid-cols-3 sm:gap-2.5 lg:grid-cols-7"
       >
-        {categoryData.map((category) => (
-          <motion.li key={category.slug} variants={fadeInUp} className="shrink-0 sm:shrink">
+        {categoryData.map((category, index) => (
+          <motion.li key={category.id || category.slug || `category-${index}`} variants={fadeInUp} className="shrink-0 sm:shrink">
             <a
               href="#catalogue"
               className={cn(

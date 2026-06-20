@@ -107,6 +107,7 @@ export function transformSanityProduct(sanityProduct: any): any {
  */
 export function transformSanityCategory(sanityCategory: any): any {
   return {
+    id: sanityCategory._id || sanityCategory.slug?.current,
     slug: sanityCategory.slug?.current || '',
     label: sanityCategory.title || '',
     description: sanityCategory.description || '',

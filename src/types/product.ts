@@ -50,6 +50,7 @@ export interface Product {
 }
 
 export interface Category {
+  id?: string;
   slug: CategorySlug;
   label: string;
   description: string;
