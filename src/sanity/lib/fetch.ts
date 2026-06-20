@@ -58,15 +58,26 @@ export async function fetchSanity<T>(
  * Always provide fallback values for missing fields.
  */
 export function transformSanityProduct(sanityProduct: any): any {
+  // Get the first image URL or use placeholder
+  let imageUrl = '/images/placeholder-product.jpg'
+  
+  if (sanityProduct.images && Array.isArray(sanityProduct.images) && sanityProduct.images.length > 0) {
+    const firstImage = sanityProduct.images[0]
+    if (firstImage?.asset?.url) {
+      imageUrl = firstImage.asset.url
+    }
+  }
+
   return {
     id: sanityProduct._id,
-    name: sanityProduct.name,
-    category: sanityProduct.category?.slug?.current || '',
-    gender: sanityProduct.gender,
-    ageGroup: sanityProduct.ageGroup,
+    name: sanityProduct.name || 'Unnamed Product',
+    category: sanityProduct.category?.slug?.current || 'casual-wear',
+    gender: sanityProduct.gender || 'unisex',
+    ageGroup: sanityProduct.ageGroup || 'kids',
     ageRangeDisplay: sanityProduct.ageRangeDisplay || undefined,
-    sizes: sanityProduct.sizes || [],
-    image: sanityProduct.images?.[0]?.asset?.url || '/images/placeholder-product.jpg',
+    sizes: Array.isArray(sanityProduct.sizes) ? sanityProduct.sizes : [],
+    colors: Array.isArray(sanityProduct.colors) ? sanityProduct.colors : undefined,
+    image: imageUrl,
     price: 'Price on request' as const,
     badge: sanityProduct.badge || undefined,
     isNew: sanityProduct.isNewArrival || false,

@@ -15,6 +15,7 @@ export const PRODUCTS_QUERY = groq`
     ageGroup,
     ageRangeDisplay,
     sizes,
+    colors,
     priceText,
     images[]{
       asset->{
@@ -47,6 +48,7 @@ export const NEW_ARRIVALS_QUERY = groq`
     ageGroup,
     ageRangeDisplay,
     sizes,
+    colors,
     priceText,
     images[]{
       asset->{
@@ -75,6 +77,7 @@ export const FEATURED_PRODUCTS_QUERY = groq`
     ageGroup,
     ageRangeDisplay,
     sizes,
+    colors,
     priceText,
     images[]{
       asset->{

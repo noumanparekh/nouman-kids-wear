@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ShoppingBag, Shirt, Sparkles, Baby, Handbag } from "lucide-react";
 
 import { CATEGORIES } from "@/data/categories";
 import { ACCENT_SOFT } from "@/lib/accents";
@@ -13,6 +13,33 @@ import type { Category } from "@/types/product";
 
 interface CategoryNavProps {
   categories?: Category[];
+}
+
+// Get appropriate icon based on category name/slug
+function getCategoryIcon(categoryLabel: string) {
+  const label = categoryLabel.toLowerCase()
+  
+  if (label.includes('ethnic') || label.includes('festive')) {
+    return <Sparkles className="size-4" />
+  }
+  if (label.includes('party')) {
+    return <Sparkles className="size-4" />
+  }
+  if (label.includes('newborn') || label.includes('baby')) {
+    return <Baby className="size-4" />
+  }
+  if (label.includes('accessories') || label.includes('shoes')) {
+    return <Handbag className="size-4" />
+  }
+  if (label.includes('girls')) {
+    return <ShoppingBag className="size-4" />
+  }
+  if (label.includes('boys')) {
+    return <Shirt className="size-4" />
+  }
+  
+  // Default fallback
+  return <ShoppingBag className="size-4" />
 }
 
 export function CategoryNav({ categories }: CategoryNavProps) {
@@ -52,7 +79,7 @@ export function CategoryNav({ categories }: CategoryNavProps) {
                 )}
                 aria-hidden="true"
               >
-                {category.label.charAt(0)}
+                {getCategoryIcon(category.label)}
               </span>
               <span className="text-xs sm:text-sm">{category.label}</span>
             </a>

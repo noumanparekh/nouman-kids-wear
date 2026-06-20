@@ -31,6 +31,11 @@ export function ProductCard({
   className,
   priority = false,
 }: ProductCardProps) {
+  // Ensure image is always a valid string
+  const imageUrl = product.image && typeof product.image === 'string' && product.image.length > 0
+    ? product.image
+    : '/images/placeholder-product.jpg'
+
   return (
     <motion.article
       variants={fadeInUp}
@@ -41,7 +46,7 @@ export function ProductCard({
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted/40">
         <Image
-          src={product.image}
+          src={imageUrl}
           alt={`${product.name} — ${CATEGORY_LABELS[product.category]} at Nouman Kids Wear, Adilabad`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 280px"
@@ -79,6 +84,25 @@ export function ProductCard({
           <p className="text-[0.68rem] text-muted-foreground/80 sm:text-[0.7rem]">
             Age: {product.ageRangeDisplay}
           </p>
+        )}
+
+        {/* Colors display - compact pills */}
+        {product.colors && product.colors.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {product.colors.slice(0, 2).map((color) => (
+              <span
+                key={color}
+                className="rounded-full border border-border/60 bg-muted/30 px-2 py-0.5 text-[0.6rem] text-foreground/80 sm:text-[0.62rem]"
+              >
+                {color}
+              </span>
+            ))}
+            {product.colors.length > 2 && (
+              <span className="text-[0.6rem] text-muted-foreground sm:text-[0.62rem]">
+                +{product.colors.length - 2}
+              </span>
+            )}
+          </div>
         )}
 
         {/* Size display - compact badges */}

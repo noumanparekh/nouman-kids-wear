@@ -42,7 +42,7 @@ export default defineType({
         layout: 'radio',
       },
       initialValue: 'blush',
-      description: 'Brand color accent for category badges',
+      description: 'Used only for website UI badge/accent styling, not actual product color',
     }),
     defineField({
       name: 'image',

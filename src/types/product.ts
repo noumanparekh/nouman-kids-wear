@@ -37,6 +37,8 @@ export interface Product {
   /** Display-friendly age range (e.g., "1–14 Years", "4–10 Years") */
   ageRangeDisplay?: string;
   sizes: string[];
+  /** Product colors (e.g., ["Maroon", "Rose Gold"]) - separate from category accent color */
+  colors?: string[];
   image: string;
   /** This is a catalogue, not a store, so we never show exact prices. */
   price: "Price on request";
