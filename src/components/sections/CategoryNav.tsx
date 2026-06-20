@@ -9,8 +9,15 @@ import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 import { Section, SectionHeading } from "@/components/common/Section";
 import { ButtonDoodle, SockDoodle } from "@/components/common/Doodles";
 import { cn } from "@/lib/utils";
+import type { Category } from "@/types/product";
 
-export function CategoryNav() {
+interface CategoryNavProps {
+  categories?: Category[];
+}
+
+export function CategoryNav({ categories }: CategoryNavProps) {
+  // Fallback to local CATEGORIES data if categories not provided
+  const categoryData = categories || CATEGORIES;
   return (
     <Section id="categories" className="relative">
       {/* Decorative doodles */}
@@ -30,7 +37,7 @@ export function CategoryNav() {
         viewport={viewportOnce}
         className="no-scrollbar mt-5 flex gap-2 overflow-x-auto pb-2 sm:mt-6 sm:grid sm:grid-cols-3 sm:gap-2.5 lg:grid-cols-7"
       >
-        {CATEGORIES.map((category) => (
+        {categoryData.map((category) => (
           <motion.li key={category.slug} variants={fadeInUp} className="shrink-0 sm:shrink">
             <a
               href="#catalogue"

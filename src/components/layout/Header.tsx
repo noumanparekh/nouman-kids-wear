@@ -16,8 +16,19 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import type { StoreInfo } from "@/data/fetchSiteInfo";
 
-export function Header() {
+interface HeaderProps {
+  storeInfo?: StoreInfo;
+}
+
+export function Header({ storeInfo }: HeaderProps) {
+  // Fallback to local SITE data if storeInfo not provided
+  const siteData = storeInfo || {
+    brandName: SITE.name,
+    address: SITE.address,
+    whatsappNumber: SITE.whatsappNumber,
+  };
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -42,12 +53,12 @@ export function Header() {
         <a
           href="#top"
           className="flex items-center gap-2.5 sm:gap-3"
-          aria-label={SITE.name}
+          aria-label={siteData.brandName}
         >
           <span className="relative block size-10 shrink-0 sm:size-12">
             <Image
               src="/brand/nouman-logo.png"
-              alt={`${SITE.name} logo`}
+              alt={`${siteData.brandName} logo`}
               fill
               priority
               sizes="48px"
@@ -56,10 +67,10 @@ export function Header() {
           </span>
           <span className="flex flex-col leading-none">
             <span className="brand-wordmark font-heading text-[1.15rem] font-semibold tracking-tight sm:text-[1.35rem]">
-              {SITE.name}
+              {siteData.brandName}
             </span>
             <span className="mt-0.5 text-[0.62rem] uppercase tracking-[0.16em] text-muted-foreground">
-              Adilabad · Telangana
+              {siteData.address.city} · {siteData.address.state}
             </span>
           </span>
         </a>
@@ -80,7 +91,7 @@ export function Header() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           <WhatsAppButton
-            href={generalEnquiryUrl()}
+            href={generalEnquiryUrl(siteData.whatsappNumber, siteData.brandName)}
             size="sm"
             className="hidden sm:inline-flex"
           >
@@ -98,7 +109,7 @@ export function Header() {
             <SheetContent side="right" className="w-[78%] gap-0 p-0 sm:max-w-xs">
               <SheetHeader className="border-b px-5 py-4 text-left">
                 <SheetTitle className="font-heading text-base">
-                  {SITE.name}
+                  {siteData.brandName}
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col px-3 py-3">
@@ -115,7 +126,7 @@ export function Header() {
               </nav>
               <div className="mt-auto border-t px-5 py-4">
                 <WhatsAppButton
-                  href={generalEnquiryUrl()}
+                  href={generalEnquiryUrl(siteData.whatsappNumber, siteData.brandName)}
                   size="md"
                   className="w-full"
                 >

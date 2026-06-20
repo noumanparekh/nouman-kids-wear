@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Section, SectionHeading } from "@/components/common/Section";
 import { ProductCard } from "@/components/common/ProductCard";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
-import type { AgeGroup, CategorySlug, Gender } from "@/types/product";
+import type { AgeGroup, CategorySlug, Gender, Product } from "@/types/product";
 
 type CategoryFilter = CategorySlug | "all";
 type GenderFilter = Gender | "all";
@@ -33,13 +33,8 @@ const EMPTY_FILTERS: FilterState = {
   size: "all",
 };
 
-// All distinct sizes across the catalogue, kept in a sensible display order.
-const ALL_SIZES = Array.from(
-  new Set(PRODUCTS.flatMap((p) => p.sizes)),
-).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-
-function matchProducts(f: FilterState) {
-  return PRODUCTS.filter((p) => {
+function matchProducts(products: Product[], f: FilterState) {
+  return products.filter((p) => {
     if (f.category !== "all" && p.category !== f.category) return false;
     if (f.gender !== "all" && p.gender !== f.gender) return false;
     if (f.age !== "all" && p.ageGroup !== f.age) return false;
@@ -83,7 +78,22 @@ function Chip({
   );
 }
 
-export function ProductCatalogue() {
+interface ProductCatalogueProps {
+  products?: Product[];
+}
+
+export function ProductCatalogue({ products: productsProp }: ProductCatalogueProps) {
+  // Fallback to local PRODUCTS data if products not provided
+  const allProducts = productsProp || PRODUCTS;
+
+  // All distinct sizes across the catalogue, kept in a sensible display order.
+  const ALL_SIZES = useMemo(
+    () =>
+      Array.from(new Set(allProducts.flatMap((p) => p.sizes))).sort((a, b) =>
+        a.localeCompare(b, undefined, { numeric: true }),
+      ),
+    [allProducts],
+  );
   // Committed filters drive the grid; draft filters are staged inside the sheet.
   const [committed, setCommitted] = useState<FilterState>(EMPTY_FILTERS);
   const [draft, setDraft] = useState<FilterState>(EMPTY_FILTERS);
@@ -91,14 +101,14 @@ export function ProductCatalogue() {
 
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
-  const filtered = useMemo(() => matchProducts(committed), [committed]);
+  const filtered = useMemo(() => matchProducts(allProducts, committed), [allProducts, committed]);
   const committedCount = countActive(committed);
   const hasFilters = committedCount > 0;
 
   // Live count for the not-yet-committed draft selection (powers "Apply (N)").
   const draftMatchCount = useMemo(
-    () => matchProducts(draft).length,
-    [draft],
+    () => matchProducts(allProducts, draft).length,
+    [allProducts, draft],
   );
 
   const openSheet = useCallback(() => {
@@ -223,6 +233,7 @@ export function ProductCatalogue() {
         onClose={closeSheet}
         onApply={applyDraft}
         onClear={clearDraft}
+        allSizes={ALL_SIZES}
       />
     </Section>
   );
@@ -237,6 +248,7 @@ function FilterSheet({
   onClose,
   onApply,
   onClear,
+  allSizes,
 }: {
   open: boolean;
   draft: FilterState;
@@ -246,6 +258,7 @@ function FilterSheet({
   onClose: () => void;
   onApply: () => void;
   onClear: () => void;
+  allSizes: string[];
 }) {
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -377,7 +390,7 @@ function FilterSheet({
                 >
                   All
                 </Chip>
-                {ALL_SIZES.map((s) => (
+                {allSizes.map((s) => (
                   <Chip
                     key={s}
                     active={draft.size === s}

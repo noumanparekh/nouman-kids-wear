@@ -9,25 +9,34 @@ import { FeaturedCollections } from "@/components/sections/FeaturedCollections";
 import { WhyShopWithUs } from "@/components/sections/WhyShopWithUs";
 import { StoreGallery } from "@/components/sections/StoreGallery";
 import { LocationContact } from "@/components/sections/LocationContact";
-import { SITE } from "@/data/site";
+import { getProducts, getNewArrivals } from "@/data/fetchProducts";
+import { getCategories } from "@/data/fetchCategories";
+import { getStoreInfo } from "@/data/fetchSiteInfo";
+import { getGalleryImages } from "@/data/fetchGalleryImages";
+import { getFeaturedCollections } from "@/data/fetchFeaturedCollections";
+import { getHeroBanner } from "@/data/fetchHeroBanner";
+
+// ISR revalidation: 60 seconds
+// Balances content freshness with CDN efficiency for catalogue data
+export const revalidate = 60;
 
 // JSON-LD so search engines understand this is a local kids clothing store.
-// SECURITY: Data comes from trusted SITE configuration, not user input.
+// SECURITY: Data comes from trusted store info, not user input.
 // JSON.stringify automatically escapes any special characters.
-function StructuredData() {
+function StructuredData({ storeInfo }: { storeInfo: Awaited<ReturnType<typeof getStoreInfo>> }) {
   const data = {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
-    name: SITE.name,
-    description: SITE.description,
-    telephone: SITE.phoneHref,
+    name: storeInfo.brandName,
+    description: storeInfo.description,
+    telephone: storeInfo.phoneHref,
     address: {
       "@type": "PostalAddress",
-      streetAddress: SITE.address.line1,
-      addressLocality: SITE.address.city,
-      addressRegion: SITE.address.state,
-      postalCode: SITE.address.pincode,
-      addressCountry: "IN",
+      streetAddress: storeInfo.address.line1,
+      addressLocality: storeInfo.address.city,
+      addressRegion: storeInfo.address.state,
+      postalCode: storeInfo.address.pincode,
+      addressCountry: storeInfo.address.country,
     },
     areaServed: "Adilabad, Telangana",
   };
@@ -39,23 +48,53 @@ function StructuredData() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  // Fetch all CMS data server-side with fallback to local data
+  // SECURITY: All fetch functions use safe Sanity queries and transform data
+  const [
+    products,
+    newArrivals,
+    categories,
+    storeInfo,
+    galleryImages,
+    collections,
+    heroBanner,
+  ] = await Promise.all([
+    getProducts(),
+    getNewArrivals(),
+    getCategories(),
+    getStoreInfo(),
+    getGalleryImages(),
+    getFeaturedCollections(),
+    getHeroBanner(),
+  ]);
+
+  console.log('[Server] Data sources:', {
+    products: products.length > 0 ? `${products.length} products` : 'fallback',
+    newArrivals: newArrivals.length > 0 ? `${newArrivals.length} new arrivals` : 'fallback',
+    categories: categories.length > 0 ? `${categories.length} categories` : 'fallback',
+    storeInfo: storeInfo.brandName,
+    galleryImages: galleryImages.length > 0 ? `${galleryImages.length} images` : 'fallback',
+    collections: collections.length > 0 ? `${collections.length} collections` : 'fallback',
+    heroBanner: heroBanner ? 'CMS banner' : 'default content',
+  });
+
   return (
     <>
-      <StructuredData />
+      <StructuredData storeInfo={storeInfo} />
       <SplashScreen />
-      <Header />
+      <Header storeInfo={storeInfo} />
       <main className="flex-1">
-        <Hero />
-        <CategoryNav />
-        <NewArrivals />
-        <ProductCatalogue />
-        <FeaturedCollections />
+        <Hero storeInfo={storeInfo} heroBanner={heroBanner} newArrivals={newArrivals} />
+        <CategoryNav categories={categories} />
+        <NewArrivals products={newArrivals} />
+        <ProductCatalogue products={products} />
+        <FeaturedCollections collections={collections} />
         <WhyShopWithUs />
-        <StoreGallery />
-        <LocationContact />
+        <StoreGallery galleryImages={galleryImages} />
+        <LocationContact storeInfo={storeInfo} />
       </main>
-      <Footer />
+      <Footer storeInfo={storeInfo} />
     </>
   );
 }

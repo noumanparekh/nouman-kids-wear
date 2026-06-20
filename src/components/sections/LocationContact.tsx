@@ -8,18 +8,37 @@ import { generalEnquiryUrl } from "@/lib/whatsapp";
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 import { Section, SectionHeading } from "@/components/common/Section";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
+import type { StoreInfo } from "@/data/fetchSiteInfo";
 
-export function LocationContact() {
-  const { address } = SITE;
+interface LocationContactProps {
+  storeInfo?: StoreInfo;
+}
+
+export function LocationContact({ storeInfo }: LocationContactProps) {
+  // Fallback to local SITE data if storeInfo not provided
+  const siteData = storeInfo || {
+    brandName: SITE.name,
+    address: SITE.address,
+    phone: SITE.phoneDisplay,
+    phoneHref: SITE.phoneHref,
+    whatsappNumber: SITE.whatsappNumber,
+    hours: SITE.hours.map(h => ({ days: h.days, time: h.time })),
+    mapEmbedUrl: undefined,
+  };
+
+  const { address } = siteData;
   const fullAddress = `${address.line1}, ${address.city}, ${address.state} ${address.pincode}`;
-  const mapsQuery = encodeURIComponent(`${SITE.name}, ${fullAddress}`);
+  const mapsQuery = encodeURIComponent(`${siteData.brandName}, ${fullAddress}`);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+  
+  // Use custom map embed URL if provided, otherwise use default query-based embed
+  const embedUrl = siteData.mapEmbedUrl || `https://www.google.com/maps?q=${mapsQuery}&output=embed`;
 
   return (
     <Section id="contact">
       <SectionHeading
         eyebrow="Visit us"
-        title="Find Nouman Kids Wear in Adilabad"
+        title={`Find ${siteData.brandName} in ${address.city}`}
         description="Drop by the store or reach us on WhatsApp — we're happy to help with sizes and availability."
       />
 
@@ -41,16 +60,16 @@ export function LocationContact() {
 
           <ContactItem icon={Phone} label="Phone">
             <a
-              href={`tel:${SITE.phoneHref}`}
+              href={`tel:${siteData.phoneHref}`}
               className="transition-colors hover:text-foreground"
             >
-              {SITE.phoneDisplay}
+              {siteData.phone}
             </a>
           </ContactItem>
 
           <ContactItem icon={Clock} label="Store hours">
             <ul className="space-y-0.5">
-              {SITE.hours.map((h) => (
+              {siteData.hours?.map((h) => (
                 <li key={h.days}>
                   <span className="text-foreground">{h.days}:</span> {h.time}
                 </li>
@@ -59,7 +78,7 @@ export function LocationContact() {
           </ContactItem>
 
           <div className="mt-1 flex flex-wrap gap-2">
-            <WhatsAppButton href={generalEnquiryUrl()} size="md">
+            <WhatsAppButton href={generalEnquiryUrl(siteData.whatsappNumber, siteData.brandName)} size="md">
               Chat on WhatsApp
             </WhatsAppButton>
             <a
@@ -87,10 +106,10 @@ export function LocationContact() {
             <MapPin className="size-6 opacity-40" />
           </div>
           <iframe
-            src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
+            src={embedUrl}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Nouman Kids Wear location"
+            title={`${siteData.brandName} location`}
             className="absolute inset-0 h-full w-full border-0"
           />
         </motion.div>

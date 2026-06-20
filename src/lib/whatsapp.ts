@@ -8,15 +8,17 @@ import type { Product } from "@/types/product";
  * SECURITY: Uses encodeURIComponent to prevent injection attacks.
  * Phone number is from trusted configuration, not user input.
  */
-export function whatsappUrl(message: string): string {
-  const phone = SITE.whatsappNumber.replace(/\D/g, "");
+export function whatsappUrl(message: string, phoneNumber?: string): string {
+  const phone = (phoneNumber || SITE.whatsappNumber).replace(/\D/g, "");
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
 /** Generic "say hello" enquiry used by the header / hero / contact CTAs. */
-export function generalEnquiryUrl(): string {
+export function generalEnquiryUrl(phoneNumber?: string, brandName?: string): string {
+  const name = brandName || SITE.name;
   return whatsappUrl(
-    `Hello ${SITE.name}! I'd like to know more about your latest kids wear collection.`,
+    `Hello ${name}! I'd like to know more about your latest kids wear collection.`,
+    phoneNumber
   );
 }
 
@@ -26,10 +28,11 @@ export function generalEnquiryUrl(): string {
  * SECURITY: All product data comes from our database/CMS, not user input.
  * Even if CMS is compromised, encodeURIComponent prevents injection.
  */
-export function productEnquiryUrl(product: Product): string {
+export function productEnquiryUrl(product: Product, phoneNumber?: string, brandName?: string): string {
+  const name = brandName || SITE.name;
   const category = CATEGORY_LABELS[product.category] ?? product.category;
   const message = [
-    `Hello ${SITE.name}, I'm interested in this item:`,
+    `Hello ${name}, I'm interested in this item:`,
     "",
     `• Item: ${product.name}`,
     `• Category: ${category}`,
@@ -37,12 +40,14 @@ export function productEnquiryUrl(product: Product): string {
     "",
     "Is it currently available? Please share the price and details.",
   ].join("\n");
-  return whatsappUrl(message);
+  return whatsappUrl(message, phoneNumber);
 }
 
 /** Enquiry scoped to a whole collection / category. */
-export function collectionEnquiryUrl(collectionTitle: string): string {
+export function collectionEnquiryUrl(collectionTitle: string, phoneNumber?: string, brandName?: string): string {
+  const name = brandName || SITE.name;
   return whatsappUrl(
-    `Hello ${SITE.name}, I'd like to see what's available in your ${collectionTitle} collection.`,
+    `Hello ${name}, I'd like to see what's available in your ${collectionTitle} collection.`,
+    phoneNumber
   );
 }

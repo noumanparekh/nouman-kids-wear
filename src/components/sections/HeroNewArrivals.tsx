@@ -4,16 +4,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 
-import { NEW_ARRIVALS } from "@/data/products";
+import { PRODUCTS } from "@/data/products";
 import { CATEGORY_LABELS } from "@/data/categories";
 import { cn } from "@/lib/utils";
+import type { Product } from "@/types/product";
 
 // Auto-transitioning mini slider of new arrivals for the hero's right side.
 // Spec: new arrivals should change every 1.5–2s.
 const AUTOPLAY_MS = 1800;
 
-export function HeroNewArrivals() {
-  const slides = NEW_ARRIVALS.slice(0, 4); // Only show 4 new arrivals as specified
+interface HeroNewArrivalsProps {
+  products?: Product[];
+}
+
+export function HeroNewArrivals({ products: productsProp }: HeroNewArrivalsProps) {
+  // Fallback to local NEW_ARRIVALS data if products not provided
+  const fallbackProducts = PRODUCTS.filter((p) => p.isNew).slice(0, 4);
+  const allProducts = productsProp || fallbackProducts;
+  const slides = allProducts.slice(0, 4); // Only show 4 new arrivals as specified
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "center" });
   const [selected, setSelected] = useState(0);
   const pausedRef = useRef(false);

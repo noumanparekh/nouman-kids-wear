@@ -9,8 +9,24 @@ import {
   WhatsAppIcon,
 } from "@/components/common/icons";
 import { generalEnquiryUrl } from "@/lib/whatsapp";
+import type { StoreInfo } from "@/data/fetchSiteInfo";
 
-export function Footer() {
+interface FooterProps {
+  storeInfo?: StoreInfo;
+}
+
+export function Footer({ storeInfo }: FooterProps) {
+  // Fallback to local SITE data if storeInfo not provided
+  const siteData = storeInfo || {
+    brandName: SITE.name,
+    tagline: SITE.tagline,
+    address: SITE.address,
+    phone: SITE.phoneDisplay,
+    phoneHref: SITE.phoneHref,
+    whatsappNumber: SITE.whatsappNumber,
+    social: SITE.social,
+  };
+  
   const year = 2026;
 
   return (
@@ -22,23 +38,23 @@ export function Footer() {
             <span className="relative block size-9 overflow-hidden rounded-full ring-1 ring-border">
               <Image
                 src="/brand/nouman-logo.png"
-                alt={`${SITE.name} logo`}
+                alt={`${siteData.brandName} logo`}
                 fill
                 sizes="36px"
                 className="object-cover"
               />
             </span>
             <span className="font-heading text-base font-semibold">
-              {SITE.name}
+              {siteData.brandName}
             </span>
           </div>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            {SITE.tagline}. A kidswear & readymade garments shop in{" "}
-            {SITE.address.city}, {SITE.address.state}.
+            {siteData.tagline}. A kidswear & readymade garments shop in{" "}
+            {siteData.address.city}, {siteData.address.state}.
           </p>
           <div className="mt-4 flex items-center gap-2">
             <a
-              href={generalEnquiryUrl()}
+              href={generalEnquiryUrl(siteData.whatsappNumber, siteData.brandName)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
@@ -46,24 +62,28 @@ export function Footer() {
             >
               <WhatsAppIcon className="size-4" />
             </a>
-            <a
-              href={SITE.social.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Visit Nouman Kids Wear on Instagram"
-              className="inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
-            >
-              <InstagramIcon className="size-4" />
-            </a>
-            <a
-              href={SITE.social.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Visit Nouman Kids Wear on Facebook"
-              className="inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
-            >
-              <FacebookIcon className="size-4" />
-            </a>
+            {siteData.social?.instagram && (
+              <a
+                href={siteData.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Nouman Kids Wear on Instagram"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
+              >
+                <InstagramIcon className="size-4" />
+              </a>
+            )}
+            {siteData.social?.facebook && (
+              <a
+                href={siteData.social.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit Nouman Kids Wear on Facebook"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
+              >
+                <FacebookIcon className="size-4" />
+              </a>
+            )}
           </div>
         </div>
 
@@ -103,17 +123,17 @@ export function Footer() {
             <p className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0" />
               <span>
-                {SITE.address.line1}, {SITE.address.city} —{" "}
-                {SITE.address.pincode}
+                {siteData.address.line1}, {siteData.address.city} —{" "}
+                {siteData.address.pincode}
               </span>
             </p>
             <p className="flex items-center gap-2">
               <Phone className="size-4 shrink-0" />
               <a
-                href={`tel:${SITE.phoneHref}`}
+                href={`tel:${siteData.phoneHref}`}
                 className="transition-colors hover:text-foreground"
               >
-                {SITE.phoneDisplay}
+                {siteData.phone}
               </a>
             </p>
           </div>
@@ -123,7 +143,7 @@ export function Footer() {
       <div className="border-t">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-muted-foreground sm:flex-row sm:px-6">
           <p>
-            © {year} {SITE.name}. All rights reserved.
+            © {year} {siteData.brandName}. All rights reserved.
           </p>
           <p>Browse-and-enquire catalogue · No online checkout.</p>
         </div>

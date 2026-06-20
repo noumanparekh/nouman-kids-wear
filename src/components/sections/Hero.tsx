@@ -15,8 +15,29 @@ import {
   StarDoodle,
   HangerDoodle,
 } from "@/components/common/Doodles";
+import type { StoreInfo } from "@/data/fetchSiteInfo";
+import type { HeroBanner } from "@/data/fetchHeroBanner";
+import type { Product } from "@/types/product";
 
-export function Hero() {
+interface HeroProps {
+  storeInfo?: StoreInfo;
+  heroBanner?: HeroBanner | null;
+  newArrivals?: Product[];
+}
+
+export function Hero({ storeInfo, heroBanner, newArrivals }: HeroProps) {
+  // Fallback to local SITE data if storeInfo not provided
+  const siteData = storeInfo || {
+    brandName: SITE.name,
+    tagline: SITE.tagline,
+    address: SITE.address,
+    whatsappNumber: SITE.whatsappNumber,
+  };
+
+  // Use CMS hero banner if available, otherwise use default content
+  const backgroundImage = heroBanner?.backgroundImage || "/hero/nouman-hero-bg.png";
+  const headline = heroBanner?.headline;
+  const subheadline = heroBanner?.subheadline;
   return (
     <section
       id="top"
@@ -25,7 +46,7 @@ export function Hero() {
       {/* Background image layer — visible, behind all content. */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/hero/nouman-hero-bg.png"
+          src={backgroundImage}
           alt=""
           fill
           priority
@@ -63,7 +84,7 @@ export function Hero() {
             className="neo-sm inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/80 px-3 py-1.5 text-[0.68rem] font-medium text-muted-foreground backdrop-blur-sm sm:px-3.5 sm:text-[0.72rem]"
           >
             <Sparkles className="size-3 text-peach-foreground sm:size-3.5" />
-            Boutique kidswear in {SITE.address.city}
+            Boutique kidswear in {siteData.address.city}
           </motion.span>
 
           {/* Brand lockup — large logo + wordmark. This is the semantic h1. */}
@@ -74,7 +95,7 @@ export function Hero() {
             <span className="relative block size-14 shrink-0 sm:size-16 lg:size-20">
               <Image
                 src="/brand/nouman-logo.png"
-                alt={`${SITE.name} logo`}
+                alt={`${siteData.brandName} logo`}
                 fill
                 priority
                 sizes="80px"
@@ -82,34 +103,50 @@ export function Hero() {
               />
             </span>
             <span className="brand-wordmark font-heading text-[2.8rem] font-semibold leading-[1.02] tracking-tight sm:text-[3.4rem] lg:text-[4rem]">
-              Nouman
-              <span className="block">Kids Wear</span>
+              {siteData.brandName.includes(' ') ? (
+                siteData.brandName.split(' ').map((word, i, arr) => (
+                  <span key={i} className={i > 0 ? "block" : ""}>
+                    {word}
+                    {i === 0 && arr.length > 1 ? ' ' : ''}
+                  </span>
+                ))
+              ) : (
+                siteData.brandName
+              )}
             </span>
           </motion.h1>
 
-          {/* Tagline / sub-headline */}
+          {/* Tagline / sub-headline — use CMS if available, otherwise default */}
           <motion.p
             variants={fadeInUp}
             className="mt-4 font-heading text-lg font-medium text-foreground sm:mt-5 sm:text-xl lg:text-2xl"
           >
-            Dressed for every{" "}
-            <span className="italic text-primary">little</span> occasion.
+            {headline || (
+              <>
+                Dressed for every{" "}
+                <span className="italic text-primary">little</span> occasion.
+              </>
+            )}
           </motion.p>
 
           <motion.p
             variants={fadeInUp}
             className="mt-2.5 max-w-md text-[0.92rem] leading-relaxed text-muted-foreground sm:mt-3 sm:text-[0.98rem]"
           >
-            Boys, girls & newborn readymade garments — casual, party and ethnic
-            wear, handpicked for {SITE.address.city}. Browse our latest stock and
-            enquire instantly on WhatsApp.
+            {subheadline || (
+              <>
+                Boys, girls & newborn readymade garments — casual, party and ethnic
+                wear, handpicked for {siteData.address.city}. Browse our latest stock and
+                enquire instantly on WhatsApp.
+              </>
+            )}
           </motion.p>
 
           <motion.div
             variants={fadeInUp}
             className="mt-6 flex flex-wrap items-center gap-2.5 sm:mt-7 sm:gap-3"
           >
-            <WhatsAppButton href={generalEnquiryUrl()} size="lg">
+            <WhatsAppButton href={generalEnquiryUrl(siteData.whatsappNumber, siteData.brandName)} size="lg">
               Enquire on WhatsApp
             </WhatsAppButton>
             <a
@@ -153,7 +190,7 @@ export function Hero() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           className="mx-auto w-full max-w-sm lg:max-w-none"
         >
-          <HeroNewArrivals />
+          <HeroNewArrivals products={newArrivals} />
         </motion.div>
       </div>
     </section>

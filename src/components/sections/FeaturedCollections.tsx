@@ -10,8 +10,15 @@ import { ACCENT_SOFT } from "@/lib/accents";
 import { fadeInUp, staggerContainer, viewportOnce } from "@/lib/animations";
 import { Section, SectionHeading } from "@/components/common/Section";
 import { cn } from "@/lib/utils";
+import type { Collection } from "@/types/product";
 
-export function FeaturedCollections() {
+interface FeaturedCollectionsProps {
+  collections?: Collection[];
+}
+
+export function FeaturedCollections({ collections: collectionsProp }: FeaturedCollectionsProps) {
+  // Fallback to local COLLECTIONS data if collections not provided
+  const collectionsData = collectionsProp || COLLECTIONS;
   return (
     <Section id="collections">
       <SectionHeading
@@ -27,7 +34,7 @@ export function FeaturedCollections() {
         viewport={viewportOnce}
         className="mt-7 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4"
       >
-        {COLLECTIONS.map((collection, i) => (
+        {collectionsData.map((collection, i) => (
           <motion.a
             key={collection.slug}
             variants={fadeInUp}

@@ -2,15 +2,23 @@
 
 import { motion } from "motion/react";
 
-import { NEW_ARRIVALS } from "@/data/products";
+import { PRODUCTS } from "@/data/products";
 import { staggerContainer, viewportOnce } from "@/lib/animations";
 import { generalEnquiryUrl } from "@/lib/whatsapp";
 import { Section, SectionHeading } from "@/components/common/Section";
 import { ProductCard } from "@/components/common/ProductCard";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
+import type { Product } from "@/types/product";
 
-export function NewArrivals() {
-  const products = NEW_ARRIVALS.slice(0, 8);
+interface NewArrivalsProps {
+  products?: Product[];
+}
+
+export function NewArrivals({ products: productsProp }: NewArrivalsProps) {
+  // Fallback to local NEW_ARRIVALS data if products not provided
+  const fallbackProducts = PRODUCTS.filter((p) => p.isNew);
+  const allProducts = productsProp || fallbackProducts;
+  const products = allProducts.slice(0, 8);
 
   return (
     <Section id="new-arrivals">
