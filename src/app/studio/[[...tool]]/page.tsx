@@ -10,21 +10,46 @@
  */
 
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 
 export const dynamic = 'force-dynamic'
 
+// Dynamically import Studio components to avoid build issues
+const NextStudio = dynamic(
+  () => import('next-sanity/studio').then((mod) => mod.NextStudio),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-muted-foreground">Loading Studio...</p>
+      </div>
+    ),
+  }
+)
+
+// Get Sanity config at runtime
+function getSanityConfig() {
+  try {
+    return require('@/../sanity.config').default
+  } catch (error) {
+    console.error('Failed to load Sanity config:', error)
+    return null
+  }
+}
+
 export default function StudioPage() {
-  const [isConfigured, setIsConfigured] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isConfigured, setIsConfigured] = useState<boolean | null>(null)
 
   useEffect(() => {
-    // Check if Sanity is configured client-side
-    const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-    setIsConfigured(!!projectId)
-    setIsLoading(false)
+    // Check if Sanity is configured by trying to access the public env var
+    // This runs client-side and checks if the config was injected by Next.js
+    const config = getSanityConfig()
+    const hasProjectId = config?.projectId && config.projectId !== ''
+    setIsConfigured(hasProjectId)
   }, [])
 
-  if (isLoading) {
+  // Loading state
+  if (isConfigured === null) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">Loading Studio...</p>
@@ -32,6 +57,7 @@ export default function StudioPage() {
     )
   }
 
+  // Not configured - show setup instructions
   if (!isConfigured) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-card p-6">
@@ -44,7 +70,7 @@ export default function StudioPage() {
           <div className="mt-8 space-y-4 rounded-xl border border-border bg-background p-6 text-left">
             <h2 className="font-semibold">Setup Instructions:</h2>
             <ol className="list-decimal space-y-2 pl-6 text-sm text-muted-foreground">
-              <li>Create a Sanity project at <a href="https://sanity.io/manage" target="_blank" rel="noopener" className="text-blue-600 hover:underline">sanity.io/manage</a></li>
+              <li>Create a Sanity project at <a href="https://sanity.io/manage" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">sanity.io/manage</a></li>
               <li>Copy .env.local.example to .env.local</li>
               <li>Add your project ID and dataset name to .env.local</li>
               <li>Restart the development server</li>
@@ -60,10 +86,7 @@ export default function StudioPage() {
     )
   }
 
-  // When Sanity is configured, dynamically import and render the Studio
-  // This is loaded lazily to avoid build issues when no credentials exist
-  const StudioWithAuth = require('next-sanity/studio').NextStudio
-  const config = require('@/../sanity.config').default
-  
-  return <StudioWithAuth config={config} />
+  // Configured - load Studio
+  const config = getSanityConfig()
+  return <NextStudio config={config} />
 }
