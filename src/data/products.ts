@@ -112,7 +112,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "girls-beige-gold-lehenga-choli",
     name: "Beige Gold Lehenga Set",
-    category: "girls-lehenga-choli",
+    category: "girls-ethnic-wear",
     gender: "girls",
     ageGroup: "kids",
     ageRangeDisplay: "4–14 Years",
@@ -125,7 +125,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "girls-olive-green-lehenga-choli",
     name: "Olive Green Lehenga Set",
-    category: "girls-lehenga-choli",
+    category: "girls-ethnic-wear",
     gender: "girls",
     ageGroup: "kids",
     ageRangeDisplay: "4–14 Years",
@@ -141,7 +141,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "girls-teal-blue-lehenga-choli",
     name: "Teal Blue Lehenga Set",
-    category: "girls-lehenga-choli",
+    category: "girls-ethnic-wear",
     gender: "girls",
     ageGroup: "kids",
     ageRangeDisplay: "4–14 Years",
@@ -154,7 +154,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "girls-silver-grey-floral-cape-lehenga",
     name: "Silver Grey Cape Lehenga",
-    category: "girls-lehenga-choli",
+    category: "girls-ethnic-wear",
     gender: "girls",
     ageGroup: "kids",
     ageRangeDisplay: "4–14 Years",
