@@ -498,7 +498,6 @@ async function seedSanity() {
       }
     }
     console.log(`✅ Created ${categories.length} categories\n`)
-
     // 2. Seed Products (with image uploads)
     console.log('🛍️  Seeding products...')
     let productCount = 0
@@ -509,20 +508,18 @@ async function seedSanity() {
         // Upload product image
         const image = await uploadImage(productData.imagePath, productData.imageAlt)
         
-        // Create product document
-        const product = {
-          ...productData,
+        // Create product document - exclude temporary fields used for upload
+        const { imagePath: _, imageAlt: __, ...cleanProduct } = productData
+        
+        const documentToCreate = {
+          ...cleanProduct,
           images: image ? [image] : [],
         }
         
-        // Remove temporary fields used for upload
-        delete product.imagePath
-        delete product.imageAlt
-
-        await client.createOrReplace(product)
+        await client.createOrReplace(documentToCreate)
         productCount++
         if (image) imageCount++
-        console.log(`  ✓ ${product.name}`)
+        console.log(`  ✓ ${productData.name}`)
       } catch (error) {
         console.error(`  ✗ Failed to create ${productData.name}:`, error)
       }
