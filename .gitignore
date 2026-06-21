@@ -40,3 +40,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# Generated Next.js / TypeScript files
+next-env.d.ts
+tsconfig.tsbuildinfo
