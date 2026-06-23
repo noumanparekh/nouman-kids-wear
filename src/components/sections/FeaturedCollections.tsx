@@ -17,8 +17,9 @@ interface FeaturedCollectionsProps {
 }
 
 export function FeaturedCollections({ collections: collectionsProp }: FeaturedCollectionsProps) {
-  // Fallback to local COLLECTIONS data if collections not provided
-  const collectionsData = collectionsProp || COLLECTIONS;
+  // Fallback to local COLLECTIONS data only if collections explicitly not provided (undefined)
+  // Empty array means CMS is configured but empty - respect that
+  const collectionsData = collectionsProp !== undefined ? collectionsProp : COLLECTIONS;
   return (
     <Section id="collections">
       <SectionHeading

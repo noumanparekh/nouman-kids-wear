@@ -6,6 +6,7 @@ import { CATEGORIES } from "@/data/categories";
 import {
   FacebookIcon,
   InstagramIcon,
+  LinkedInIcon,
   WhatsAppIcon,
 } from "@/components/common/icons";
 import { generalEnquiryUrl } from "@/lib/whatsapp";
@@ -156,20 +157,7 @@ export function Footer({ storeInfo }: FooterProps) {
               className="inline-flex items-center gap-0.5 transition-colors hover:text-foreground hover:underline hover:underline-offset-2"
             >
               Sk Ibrahim
-              <svg
-                className="size-3 transition-transform hover:translate-x-0.5 hover:-translate-y-0.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M7 17L17 7M17 7H7M17 7V17"
-                />
-              </svg>
+              <LinkedInIcon className="size-3 transition-transform hover:translate-x-0.5 hover:-translate-y-0.5" />
             </a>
           </p>
         </div>

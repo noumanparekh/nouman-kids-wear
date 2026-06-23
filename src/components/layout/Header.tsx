@@ -9,6 +9,10 @@ import { generalEnquiryUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
 import {
+  FacebookIcon,
+  InstagramIcon,
+} from "@/components/common/icons";
+import {
   Sheet,
   SheetClose,
   SheetContent,
@@ -132,6 +136,35 @@ export function Header({ storeInfo }: HeaderProps) {
                 >
                   Enquire on WhatsApp
                 </WhatsAppButton>
+                
+                {/* Social links in mobile menu */}
+                {(SITE.social.instagram || SITE.social.facebook) && (
+                  <div className="mt-4 flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Follow us:</span>
+                    {SITE.social.instagram && (
+                      <a
+                        href={SITE.social.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram"
+                        className="inline-flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
+                      >
+                        <InstagramIcon className="size-4" />
+                      </a>
+                    )}
+                    {SITE.social.facebook && (
+                      <a
+                        href={SITE.social.facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook"
+                        className="inline-flex size-8 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
+                      >
+                        <FacebookIcon className="size-4" />
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </SheetContent>
           </Sheet>

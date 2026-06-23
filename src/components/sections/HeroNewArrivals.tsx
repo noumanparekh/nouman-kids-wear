@@ -18,9 +18,10 @@ interface HeroNewArrivalsProps {
 }
 
 export function HeroNewArrivals({ products: productsProp }: HeroNewArrivalsProps) {
-  // Fallback to local NEW_ARRIVALS data if products not provided
+  // Fallback to local NEW_ARRIVALS data only if products explicitly not provided (undefined)
+  // Empty array means CMS is configured but empty - respect that
   const fallbackProducts = PRODUCTS.filter((p) => p.isNew).slice(0, 4);
-  const allProducts = productsProp || fallbackProducts;
+  const allProducts = productsProp !== undefined ? productsProp : fallbackProducts;
   const slides = allProducts.slice(0, 4); // Only show 4 new arrivals as specified
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "center" });
   const [selected, setSelected] = useState(0);

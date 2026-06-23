@@ -23,11 +23,11 @@ export const SITE = {
     pincode: "504001",
     country: "India",
   },
-  // Google Maps location
+  // Google Maps location - regular URL for "Open in Google Maps" button
   mapUrl: "https://maps.app.goo.gl/8AsHwTKXUfPaXCgC9",
-  // Map embed URL for iframe — leave undefined to auto-generate from the full brand + address
-  // (see LocationContact.tsx line 37). Auto-generated URLs tend to be more specific.
-  mapEmbedUrl: undefined,
+  // Map embed URL for iframe - uses query-based embed (works without API key)
+  // This searches for the business by name and location
+  mapEmbedUrl: "https://www.google.com/maps?q=Nouman+Kids+Wear+Main+Road+Clock+Tower+Adilabad+Telangana&output=embed",
   // Placeholder hours — confirm with the shop.
   hours: [
     { days: "Monday – Saturday", time: "10:00 AM – 9:30 PM" },
